@@ -254,7 +254,7 @@ offsets()
      #else
      #   BASEOFFSET=0
      #fi
-     echo "loops $loops -le $NUSERS NUSERS"
+     #echo "loops $loops -le $NUSERS NUSERS"
      while [[ $loops -le $NUSERS ]] ; do
             JOBNUMBER=$loops
             eval $j
@@ -291,7 +291,7 @@ if [ -f /etc/delphix/version ]  ; then
 fi
 
 all="randrw read write readrand"
-all="read write readrand"
+all="readrand write read "
 if [ $TESTS = "all" ] ; then
   jobs=$all
 else 
@@ -341,12 +341,14 @@ if [ -f /etc/delphix/version ] && [ $RAW -eq 0 ] ; then
          echo "drop fs [default=n] ? (y/n) "
          read response
          if [ "$response" == "y" ]; then
-               sudo umount $DIRECTORY 
-               sudo rm -rf $DIRECTORY 
-               sudo zfs destroy $FILESYSTEM 
+               echo "run the following commands to drop filesystem:"
+               echo "  sudo umount $DIRECTORY "
+               echo "  sudo rm -rf $DIRECTORY "
+               echo "  sudo zfs destroy $FILESYSTEM "
+               echo "exiting..."
                #sudo zpool  destroy $FILESYSTEM
                #echo "Exiting program."
-               #exit 1
+               exit 1
          fi
      fi
    fi
@@ -373,20 +375,22 @@ if [ -f /etc/delphix/version ] && [ $RAW -eq 0 ] ; then
       eval $cmd
    fi
    for i in 1 ; do
-     cmd="sudo  zfs get primarycache $DIRECTORY"
-      echo $cmd
+     echo "running the following commands: "
+     cmd="   sudo  zfs get primarycache $DIRECTORY"
+      echo "   $cmd"
       eval $cmd >  $OUTPUT/setup.txt
-     cmd="sudo  zfs get secondarycache $DIRECTORY"
-      echo $cmd
+     cmd="   sudo  zfs get secondarycache $DIRECTORY"
+      echo "   $cmd"
       eval $cmd >>  $OUTPUT/setup.txt
-     cmd="sudo  zfs get recordsize $DIRECTORY"
-      echo $cmd
+     cmd="   sudo  zfs get recordsize $DIRECTORY"
+      echo "   $cmd"
       eval $cmd >>  $OUTPUT/setup.txt
-     cmd="sudo  zfs get compression $DIRECTORY"
-      echo $cmd
+     cmd="   sudo  zfs get compression $DIRECTORY"
+      echo "   $cmd"
       eval $cmd >>  $OUTPUT/setup.txt
    done 
-   cat $OUTPUT/setup.txt | grep -v PROPERTY
+   echo "results:"
+   cat $OUTPUT/setup.txt | grep -v PROPERTY | sed -e 's/^/   /' 
 fi 
 
 if [ ! -d $DIRECTORY ]; then 
@@ -414,7 +418,8 @@ if [ -f /etc/delphix/version ]  ; then
          echo "    readlink -f /dev/dsk/${i} | sed -e 's/:wd/:a'/"
       done
       dtrace_luns  >> fio.d
-      dtrace_luns  
+      echo "results:"
+      dtrace_luns   | sed -e 's/^/   /'
    fi 
    dtrace_end   >> fio.d
 fi
@@ -469,8 +474,10 @@ fi
 
 if [ $RAW -eq 0 ]; then
    cmd="ls -l $DIRECTORY/$FILE "
-   echo $cmd
-   eval $cmd
+   echo "running "
+   echo "    $cmd"
+   echo "results:"
+   eval $cmd | sed -e 's/^/   /'
 fi
 
 if [ $FORCE = "n" ] ; then
@@ -482,13 +489,17 @@ if [ $FORCE = "n" ] ; then
 fi
 
 
-# overwrite=1
-# size=$SIZE
-# filename=$FILE
-# size=100m
-
-#  if filename is specified it is used
-#  and size is ignored
+# following functions 
+#    init
+#    read
+#    write
+#    randread
+#    randrw
+# create the fio job files
+# init is always used to initialize the job file 
+# with the default information
+# then the other funtions are called to add in test
+# specific lines
 
 function init
 {
@@ -568,7 +579,7 @@ done >> $JOBFILE
 
 #while [ 1 == 1 ]; do
 for j in $jobs; do
-  # default values if the don't get set
+  # default values if thet don't get set otherwise
   USERS=1
   WRITESIZE=008
   READSIZE=008
