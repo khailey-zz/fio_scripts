@@ -184,16 +184,18 @@ In R we can now source "fio.r" which creates a function "graphit(m)"
 
 By default it will graph 8K random reads.
 If you source "fiog.r" it will run through a series of different combinations graphing them and saving the output.
-The output is save to png files in the directory 
+The output is save to png files in the directory  C:\TMP
 
 Three different example data files are included
 
 * data_emc.r
 * data_ssd.r
 * data_pharos.r
+* data_mem.r
 
 collected from different systems. The EMC data is one single spindle. The pharos data is striped but
-shared filer. THe ssd data is from two striped SSD devices.
+shared filer. THe ssd data is from two striped SSD devices. The mem data is from using /tmp where /tmp
+is a memory filesystem.
 In order to tests these datasets, simple source them
 
 	source("data_ssd.r")
