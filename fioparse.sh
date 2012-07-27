@@ -39,7 +39,7 @@ do
              DTRACE="dtrace"
              ;;
          r)
-             RPLOTS="rplots"
+             RPLOTS="rplots percentiles"
              ;;
          ?)
              usage
@@ -51,10 +51,15 @@ shift $((OPTIND-1))
 #echo "opts $@"
 
 # print header line
-echo -n "test  users size         MB       ms      min      max      std    IOPS"
-if [ x$VERBOSE == x"verbose" ] ; then
-  echo  "    50us   1ms   4ms  10ms  20ms  50ms   .1s    1s    2s   2s+"
-fi 
+
+if [  -z "$RPLOTS" ] ; then
+  echo -n "test  users size         MB       ms      min      max      std    IOPS"
+  if [ x$VERBOSE == x"verbose" ] ; then
+    echo  "    50us   1ms   4ms  10ms  20ms  50ms   .1s    1s    2s   2s+"
+  else
+    echo " "
+  fi 
+fi
 
 
 
@@ -67,11 +72,13 @@ perl -e '
 
   $ouputrows=0;
   $DEBUG=0;
+  $CLAT=0;
+
   if  ( 1 == $DEBUG ) { $debug=1; }
 
   foreach $argnum (0 .. $#ARGV) {
      ${$ARGV[$argnum]}=1;
-     print "$ARGV[$argnum]=${$ARGV[$argnum]}\n";
+    #print "$ARGV[$argnum]=${$ARGV[$argnum]}\n";
   }
   print "continuting ... \n" if defined ($debug);
 
@@ -290,8 +297,8 @@ sub print_hist {
              next;
         }
         #      lat (usec): min=7 , max=1305.5K, avg=61053.50, stdev=73135.80
-        if ( $line =~ m/ stdev=/ ) {  # get rid of histogram lines that have "lat"
-          if ( $line =~ m/ lat/ ) {   #get rid of clat lines
+        if ( $line =~ m/ stdev=/ ) {  # filter out histogram lines that have "lat"
+          if ( $line =~ m/ lat/ ) {   # filter out clat lines
              $lat=$unit=$latmin=$latmax=$latstd=$line;
              $lat =~ s/.*avg=//;
              $lat =~ s/,.*//;
@@ -372,6 +379,72 @@ sub print_hist {
                 $lat{$key}=$val;
              }
            }
+         }
+
+         #     clat percentiles (usec):
+         #     |  1.00th=[  179],  5.00th=[  185], 10.00th=[  191], 20.00th=[  195],
+         #     | 30.00th=[  199], 40.00th=[  201], 50.00th=[  203], 60.00th=[  207],
+         #     | 70.00th=[  215], 80.00th=[  219], 90.00th=[  229], 95.00th=[  266],
+         #     | 99.00th=[  398], 99.50th=[  474], 99.90th=[  532], 99.95th=[  796],
+         #     | 99.99th=[ 1352]
+         #    bw (KB/s)  : min=33040, max=38352, per=100.00%, avg=36799.16, stdev=1312.23
+
+        if ( $CLAT == 1 ) {
+           # printf("CLAT == 1\n");
+           if (  $line =~ m/\|/ ) {
+             #printf("CLAT == 1 and found pipe, line:%s\n",$line);
+             #printf("CLAT line:%s\n",$line);
+              if (  $line =~ m/95.00th/ ) {
+                 $clat95_00 = $line;
+                 $clat95_00 =~ s/.*95.00th=\[//;
+                 $clat95_00 =~ s/\],.*//;
+                 $clat95_00 =~ s/ //g;
+                #printf("95.00th:%s\n",$clat95_00);
+              }
+              if (  $line =~ m/99.00th/ ) {
+                 $line =~ s/99\...th.*?=\[//g;
+                 $line =~ s/\|//g;
+                 $line =~ s/\]//g;
+                 $line =~ s/ //g;
+                 ($clat99_00, $clat99_50, $clat99_90, , $clat99_95 )=split(",",$line);
+                #printf("99.00th:%s\n",$line);
+                #printf("99.00th:%s\n",$clat99_00);
+                #printf("99.50th:%s\n",$clat99_50);
+                #printf("99.90th:%s\n",$clat99_90);
+                #printf("99.95th:%s\n",$clat99_95);
+              }
+              if (  $line =~ m/99.99th/ ) {
+                 $clat99_99 = $line;
+                 $clat99_99 =~ s/.*99.99th=\[//;
+                 $clat99_99 =~ s/\].*//;
+                 $clat99_99 =~ s/ //g;
+                #printf("99.99th:%s\n",$clat99_99);
+              }
+           } else { 
+              #printf("CLAT == 1 and no piple, line:%s\n",$line);
+              $CLAT = 0; 
+           }
+        } 
+        if ( $line =~ m/clat percentiles / ) {
+            $CLAT=1 ;
+          # clat percentiles (usec):
+            $clat_unit=$line ;
+            $clat_unit =~ s/.*\(//;
+            $clat_unit =~ s/\).*//;
+           #printf("clat unit:%s:\n",$clat_unit);
+            if ( $clat_unit eq "usec" ) {
+              $clat_mult = .001 ;
+            } elsif ( $clat_unit eq "msec" ) {
+              $clat_mult = 1;
+            } elsif ( $clat_unit eq "sec" ) {
+              $clat_mult = 1000;
+            } else {
+               printf("clat unit :%s: unknown\n",$clat_unit);
+               printf("exiting \n");
+               exit;
+            }
+           #printf("clat mult:%s:\n",$clat_mult);
+           #printf("CLAT line:%s\n",$line);
         }
 
        # important for the follwoing dtrace lines, get rid of spaces and tabs
@@ -415,8 +488,9 @@ sub print_hist {
         if ( $line =~ m/latency_distribution/ ) { ($dtrace_io_type, $value)=split(",",$line);}
         if ( $line =~ m/dtrace_latency_end/ )   { $dtrace_latency=0; }
 
+        # 
         if ( $line =~ m/\|/ ) {
-           #printf("dtrace %s\n", $line);
+              # printf("dtrace %s\n", $line);
              $line=~ s/\|@*/,/;
              $line =~ s/ *//g;
            if ( $dtrace_size == 1 )    { 
@@ -606,6 +680,9 @@ sub print_hist {
 	   $rplot_hist = 1;  
            print_hist;  
 	   $rplot_hist = 0;  
+           foreach $percent ( $clat95_00, $clat99_00 ,$clat99_50 ,$clat99_90 ,$clat99_95 ,$clat99_99 ) {
+              printf(",%5.3f",$percent*$clat_mult); 
+           }
            if ( $outputrows > 0 && $labels == 1 ) { printf(")"); }
 	   if ( $lables == 1 )  { printf(")"); } 
            printf("\n" );
@@ -617,13 +694,30 @@ sub print_hist {
    }
       } # end of STDIN
       if( $rplots == 1 ) {
-	  if ( $lables != 1 )  { printf("),nrow=25)\n"); }
-          printf("name <- \"%s\" \n", $dir );
-          printf("if ( exists(\"total\") ) { \n");
-          printf("   total <- rbind ( total, list( name=name, matrix=m )) \n");
-          printf("} else { \n");
-          printf("   total <- list( name=name, matrix=m )\n");
-          printf("} \n");
+	  if ( $lables != 1 )  { 
+            if ( $percentiles == 1 ) {
+               printf("),nrow=31)\n"); 
+            } else {
+               printf("),nrow=25)\n"); 
+            }
+            printf("tm <- t(m)\n");
+            printf("m <-tm\n");
+            printf("colnames <- c(\"name\",\"users\",\"bs\",\"MB\",\"lat\",\"min\",\"max\",\"std\",\"iops\"\n");
+            printf(", \"us50\",\"us100\",\"us250\",\"us500\",\"ms1\",\"ms2\",\"ms4\",\"ms10\",\"ms20\"\n");
+            printf(", \"ms50\",\"ms100\",\"ms250\",\"ms500\",\"s1\",\"s2\",\"s5\"\n");
+            if ( $percentiles == 1 ) {
+               printf(",\"p95_00\", \"p99_00\", \"p99_50\", \"p99_90\", \"p99_95\", \"p99_99\"\n");
+            }
+            printf(")\n");
+            printf("colnames(m)=colnames\n");
+            printf("m <- data.frame(m)\n");
+          }
+          #printf("name <- \"%s\" \n", $dir );
+          #printf("if ( exists(\"total\") ) { \n");
+          #printf("   total <- rbind ( total, list( name=name, matrix=m )) \n");
+          #printf("} else { \n");
+          #printf("   total <- list( name=name, matrix=m )\n");
+          #printf("} \n");
       }
    
 printf("at end\n") if defined ($debug);
