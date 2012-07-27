@@ -25,7 +25,11 @@ SEEDFILE=fio_random.dat
 
 DIRECT=1
 BINARY="./fio"
-DIRECTORY="/domain0/fiotest"
+if [ -f /etc/delphix/version ]  ; then 
+  DIRECTORY="/domain0/fiotest"
+else 
+  DIRECTORY="./"
+fi
 OUTPUT="."
 TESTS="all"
 SECS="60"
@@ -38,6 +42,7 @@ CUSTOMBLOCKSIZE=-1
 FILE=fiodata
 FILENAME="filename=$FILE"
 RAW=0
+NOZFS=0
 
 DTRACE1=""
 DTRACE2=""

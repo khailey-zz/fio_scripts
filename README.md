@@ -27,6 +27,7 @@ files in this project
 	> data_emc.r   
 	> data_ssd.r   
 	> data_pharos.r   
+	> data_mem.r   
 
 Running fio.sh
 ---------------------------
@@ -51,13 +52,15 @@ varied.
 	OPTIONS:
 	   -h              Show this message
 	   -b  binary      name of fio binary, defaults to ./fio
-	   -d  directory   work directory where fio creates a fio and reads and writes, default /domain0/fiotest
+	   -d  directory   work directory where fio creates a file and reads and writes, 
+                           default ./ (and default filename created is fiodata) 
 	   -o  directory   results directory, where to put output files, defaults to ./
-	   -t  tests       tests to run, defaults to all, options are
+	   -t  tests       tests to run, defaults to readrand,read,write 
+                           options are
 	                      readrand - IOPS test : 8k by 1,8,16,32 users
 	                      read  - MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
-	                      write - redo test, ie sync seq writes : 1k, 4k, 8k, 128k, 1024k by 1 user
-	                      randrw   - workload test: 8k read write by 1,8,16,32 users
+	                      write - redo test, ie sync seq writes : 1k, 8k, 128k by 1 user
+	                      randrw   - workload test: 8k read and write by 1,8,16,32 users
 	   -s  seconds     seconds to run each test for, default 60
 	   -m  megabytes   megabytes for the test I/O file to be used, default 8000 (ie 8G)
 	   -i              individual file per process, default size 100m (overrides -m )
