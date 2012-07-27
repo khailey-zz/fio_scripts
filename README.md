@@ -8,7 +8,7 @@ There are a lot of I/O benchmarking tools out there, most noteably
 iozone and bonnie++, but fio seems to be the most flexible with
  the most active user community
 
-* project: http://freecode.com/projects/fio
+* fio project: http://freecode.com/projects/fio
 * download: http://brick.kernel.dk/snaps/fio-2.0.7.tar.gz
 * man page: http://linux.die.net/man/1/fio
 * how to: http://www.bluestop.org/fio/HOWTO.txt
@@ -32,7 +32,7 @@ Running fio.sh
 ---------------------------
 First run fio.sh.
 The script fio.sh will run a series of I/O benchmarks.
-The series of I/O benchmarks is aimed at simulating the typical workload
+The series of I/O benchmarks are aimed at simulating the typical workload
 of an Oracle database.
 There are 3 types of I/O run
 

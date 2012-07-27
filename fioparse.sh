@@ -12,7 +12,8 @@ OPTIONS:
    -h              Show this message
    -v              verbose, include histograms in output
    -d              include dtrace data in output
-   -r              r format
+   -p              include I/O latency at percents 95%, 99% and 99.99%
+   -r              r format (includes histograms and percentiles)
 EOF
 }
 
@@ -22,10 +23,12 @@ EOF
 # the perl looks at each commandline arge and sets a 
 # variable with that name = 1
 #
-VERBOSE=""
-RPLOTS=""
-DTRACE=""
-while getopts .dhvr. OPTION
+AGRUMENTS=""
+VERBOSE=0
+DTRACE=0
+RPLOTS=0
+PERCENTILES=0
+while getopts .dhpvr. OPTION
 do
      case $OPTION in
          h)
@@ -33,13 +36,24 @@ do
              exit 1
              ;;
          v)
-             VERBOSE="verbose"
+             ARGUMENTS="$ARGUMENTS verbose"
+             VERBOSE=1
              ;;
          d)
-             DTRACE="dtrace"
+             ARGUMENTS="$ARGUMENTS dtrace"
+             DTRACE=1
              ;;
          r)
-             RPLOTS="rplots percentiles"
+             ARGUMENTS="$ARGUMENTS rplots percentiles"
+             RPLOTS=1
+             PERCENTILES=1
+             echo "please enter a test  name:"
+             read TESTNAME
+             export TESTNAME=${TESTNAME:-"noname"}
+             ;;
+         p)
+             ARGUMENTS="$ARGUMENTS percentiles"
+             PERCENTILES=1
              ;;
          ?)
              usage
@@ -52,13 +66,15 @@ shift $((OPTIND-1))
 
 # print header line
 
-if [  -z "$RPLOTS" ] ; then
+if [ $RPLOTS -eq 0 ] ; then
   echo -n "test  users size         MB       ms      min      max      std    IOPS"
-  if [ x$VERBOSE == x"verbose" ] ; then
-    echo  "    50us   1ms   4ms  10ms  20ms  50ms   .1s    1s    2s   2s+"
-  else
-    echo " "
-  fi 
+  if [ $VERBOSE -eq 1 ] ; then
+    echo  -n "    50us   1ms   4ms  10ms  20ms  50ms   .1s    1s    2s   2s+"
+  fi
+  if [ $PERCENTILES -eq 1 ] ; then
+    echo  -n "       95%      99%    99.5%    99.9%  99.95%    99.99%"
+  fi
+  echo " "
 fi
 
 
@@ -606,6 +622,13 @@ sub print_hist {
                    $max_dtrace_bucket = 0 
               } # end dtrace
             } # end verbose        
+
+            if ( $percentiles == 1 ) {
+              foreach $percent ( $clat95_00, $clat99_00 ,$clat99_50 ,$clat99_90 ,$clat99_95 ,$clat99_99 ) {
+                 printf(",%8.3f",$percent*$clat_mult); 
+              }
+            } # end percentile        
+
             printf("\n"); 
 
             $users="";
@@ -711,6 +734,7 @@ sub print_hist {
             printf(")\n");
             printf("colnames(m)=colnames\n");
             printf("m <- data.frame(m)\n");
+            printf("testtype <- \"%s\"\n",$ENV{'TESTNAME'});
           }
           #printf("name <- \"%s\" \n", $dir );
           #printf("if ( exists(\"total\") ) { \n");
@@ -722,5 +746,5 @@ sub print_hist {
    
 printf("at end\n") if defined ($debug);
 
-' $VERBOSE  $RPLOTS $DTRACE
+' $ARGUMENTS 
 
