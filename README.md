@@ -29,6 +29,10 @@ files in this project
 	> data_pharos.r   
 	> data_mem.r   
 
+NOTE: the scripts in this project require that you have already
+downloaded fio and compiled a binary of fio.
+The scripts also require version 2.0 of fio to work correctly.
+
 Running fio.sh
 ---------------------------
 First run fio.sh.
@@ -58,7 +62,8 @@ varied.
 	   -t  tests       tests to run, defaults to readrand,read,write 
                            options are
 	                      readrand - IOPS test : 8k by 1,8,16,32 users
-	                      read  - MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
+	                      read  - MB/s t:w
+est : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
 	                      write - redo test, ie sync seq writes : 1k, 8k, 128k by 1 user
 	                      randrw   - workload test: 8k read and write by 1,8,16,32 users
 	   -s  seconds     seconds to run each test for, default 60
@@ -215,3 +220,4 @@ you can set working directory with
 
 for example to set it to C:\Temp
 
+GRAPH Examples:	 https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-Percentile-Latency
