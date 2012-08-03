@@ -83,8 +83,23 @@ graphit <- function(m,i_name="undefined",i_users=0,i_bs="undefined", i_title="de
     p99_50 <- as.numeric(t(rr['p99_50']))
     p99_90 <- as.numeric(t(rr['p99_90']))
     p99_95 <- as.numeric(t(rr['p99_95']))
-    p99_99 <- as.numeric(t(rr['p99_90']))
+    p99_99 <- as.numeric(t(rr['p99_99']))
     cols  <- 1:length(lat)
+
+    minlat <- 0.05
+    p95_00 <- pmax(p95_00 ,minlat)
+    p99_00 <- pmax(p99_00, minlat)
+    p99_50 <- pmax(p99_50, minlat)
+    p99_90 <- pmax(p99_90, minlat)
+    p99_95 <- pmax(p99_95, minlat)
+    p99_99 <- pmax(p99_99, minlat)
+    lat    <- pmax(lat, minlat)
+    #max    <- pmax(max, minlat)
+    max    <- pmax(max, p99_99)
+
+    #p95_00 <- p99_90 
+    #p99_00 <- p99_95 
+
 
   # if users is defined then columns are the block sizes
     if ( i_users > 0 ) {
@@ -109,9 +124,17 @@ graphit <- function(m,i_name="undefined",i_users=0,i_bs="undefined", i_title="de
 
   # draw the MB/s bars in bottom graph
      MBbars <- t(t(fhist)*MB)
+     #MBbars <- pmax(MBbars,0.005)
+     
      colnames(MBbars) = col_lables
-     op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=2)
-     text(op, 0,MB,adj=c(-1,0),cex=.75)
+     #print(MBbars)
+     #op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=2, log = "y",ylim=c(0.01,100000) )
+     #op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=2, ylim=c(0.01,100000) )
+     op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=1, ylim=c(0,400),xlim=c(1,2*length(lat)+1))
+     text(op, 0,round(MB),adj=c(0.2,-1.4),col="gray70")
+     text(op, 0,round(MB),adj=c(0.2,-0.2),col="gray20")
+     #op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=2, ylim=c(0,4000));
+     #text(op, 0,MB,adj=c(-1,0),cex=.75)
   # reset the margins to the default
      par(mar=c(0, 4, 1, 4))
 
@@ -122,7 +145,7 @@ graphit <- function(m,i_name="undefined",i_users=0,i_bs="undefined", i_title="de
     ylims <-   c(.025,5000)
 
   # average latency  line
-    plot(cols, lat, type = "l", xaxs = "i", lty = 2, col = "black", lwd = 1, bty = "l", 
+    plot(cols, pmax(lat,.025), type = "l", xaxs = "i", lty = 2, col = "black", lwd = 1, bty = "l", 
        xlim = c(xminwidth,xmaxwidth), ylim = ylims, ylab = "" , xlab="",log = "y", yaxt = "n" , xaxt ="n") 
     text(cols,lat,round(lat,1),adj=c(1,2))
     title(main=i_title)

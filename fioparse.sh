@@ -28,7 +28,7 @@ VERBOSE=0
 DTRACE=0
 RPLOTS=0
 PERCENTILES=0
-while getopts .dhpvr. OPTION
+while getopts .dhpR:vr. OPTION
 do
      case $OPTION in
          h)
@@ -42,6 +42,12 @@ do
          d)
              ARGUMENTS="$ARGUMENTS dtrace"
              DTRACE=1
+             ;;
+         R)
+             ARGUMENTS="$ARGUMENTS rplots percentiles"
+             RPLOTS=1
+             PERCENTILES=1
+             export TESTNAME=$OPTARG
              ;;
          r)
              ARGUMENTS="$ARGUMENTS rplots percentiles"

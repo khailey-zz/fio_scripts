@@ -261,7 +261,6 @@ There three graphs
    
 2. base 10 latency
 -------------------------------------------
-
        shows the average latency - black line
        the background is a type of scalling factor
                     blue means latency actually gets faster from one point to next
@@ -269,10 +268,8 @@ There three graphs
                     darker red means latency gets slower and throughput actually decreases
             the hight of these bars is     (ratio of increase in latency)  / ratio of increase in users )
             for example if  1user was 1ms and 8 users was 8ms then that would be  (8users/1user)/(8ms/1ms)
-
 3. the throughput bar chart, shows MB/s
 -------------------------------------------
-
     the bars are color code with amount percentage of throughput that had a latency of that color where colors
     are in the right hand axis legend in top graph the latency on log scale
 
