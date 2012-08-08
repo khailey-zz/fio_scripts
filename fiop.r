@@ -3,16 +3,41 @@
 #
 #  example
 #
-#   graphit(m,i_name="read",i_users=1, i_poly=0, i_hist=0)
+#   graphit(m)
+# 
+#   where m is the data.frame with the fio data
+#   example m data frames in the files data_[type].r
+#   source one of the files to instantiate an m
+#
+#   to create a m data.frame on fio output files run
+#   fioparse [ list of output files] > data_type.r
+#   then source data_type.r in your R session
+#
+#   default graphit(m) graphs random reads across varying user
+#   loads, so the m data has to have at least one random read run
+#
+#   graphit(m) can also graph "read" tests or "write" tests
+#   graphit will vary on the X axis the # of users or the I/O size
+#   if I/O size is specified, then the X axis varies the number of users
+#   if number of users is specified then the X axis is I/O sizes
+#   thus the data should have several different user loads and/or I/O sizes
+#   for example
+#
+#   graphit(m,i_name="read",i_bs="8K")
 #  
+#   will graph read tests across a varying number of users loads found in m
 #
-#      delta(lat)/ delta(block,user)
-#           -> larger latency increase, worse scaling
-#              larger lency the bigger "scaling" factor
-#              bigger  = bad 
-#
-#      if delta(lat) < 0 , means got better scaling 
-#          the larger the better
+#   graphit takes a number of optional parameters
+#      i_poly=0 - turns off the diagraming of polygons around avg, 95% and 99% lat
+#      i_hist=0 - turns off graphing the I/O histograms
+#      i_plot_avg = 0 - turn off graphing average latency
+#      i_plot_max = 0 - turn off graphing max latency
+#      i_plot_95 = 0 - turn off graphing 95% latency
+#      i_plot_max = 0 - turn off graphing 99% latency
+#      i_plots = 2  - only plot 2 graphs (don't plot the scaling graph, middle graph)
+#      i_scalelat = "avg" - latency used to graph latency in middle graph, options are
+#                    "95", "99", "9999" 
+
 graphit <- function(
                     m,i_name="undefined",i_users=0,i_bs="undefined", i_title="default title",i_hist=1,i_poly=1,
                     i_plot_avg  = 1 ,
