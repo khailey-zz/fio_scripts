@@ -327,3 +327,4 @@ Ideally the bars are so small they aren't visible which means latency stays the 
 
 The third chart is simply the throughput, ie the MB/s. These bars have slices that represent the percentage of the I/O at the latency that corresponds to that color. The colors are defined in the legend of the top chart.
 
+.
