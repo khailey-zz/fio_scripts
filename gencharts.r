@@ -10,10 +10,10 @@ source("fiogp.r")
 source("data_pg512.r")
 source("fiogp.r")
 
-source("data_pharos2.r")
+source("data_pharos.r")
 source("fiogp.r")
 
-source("data_skytap1.r")
+source("data_skytap.r")
 source("fiogp.r")
 
 source("data_ssd.r")

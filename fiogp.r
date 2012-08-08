@@ -5,6 +5,7 @@ hist=1
 
 # graph writes  by 3 user loads
 # for each user load graph the different blocksizes
+
 testname="write"
  # for (users in c(1,4,16) ){
  # }

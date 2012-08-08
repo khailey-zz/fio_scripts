@@ -224,8 +224,9 @@ graphit <- function(
      #  SCALING = (ratio of lat at point 2 over point 1)
      #             divided by
      #            (ratio of xval at point 2 over point 1)
-     #   ie when lat grows faster than xval, ie scaling > 1, 
-     #    the throughput actually decreases           
+     #             xval is either #users or I/O request size
+     #   ie when lat grows faster than xval, ie scaling > 1 
+     #      which is bad, ie the throughput actually decreases           
      #   negative values are where the latency actual got faster
      #   at higher x values
         scaling <- rep(NA,(length(lat)-1) )
@@ -237,22 +238,20 @@ graphit <- function(
              cat("sca_f[",i,"]=",sca_f,"\n")
              scalei <- lat_f/sca_f
              cat("scalei ",scalei,"\n")
-             scaling[i] <- scalei
+           # want to graphically exagerate the higher values and dampen the smaller values
+             scaling[i] <- 2^(scalei*10)/1024  # > 1 means throughput is going down 2^(1*10)
+             cat("scalei exp",scaling[i],"\n")
              if ( lat[i] > lat[i+1] ) { scaling[i] <- scaling[i]*(-1) }
         }
 
   #
   #  LABEL= BLOCK SIZE 
   #
-      if ( i_users > 0 ) {
-        col_lables <- bs 
-      }
+      if ( i_users > 0 ) { col_lables <- bs }
   #
   #  LABEL = USERS
   #
-      if ( i_bs != "undefined" ) {
-        col_lables <- users
-      }
+      if ( i_bs != "undefined" ) { col_lables <- users }
 
   #
   # LAYOUT
@@ -350,25 +349,32 @@ graphit <- function(
      }
      avglat_func(xminwidth,xmaxwidth,ymin,ymax) 
      j=xminwidth
+     #
+     # SCALING BARs
+     #
      for ( scale in  scaling  )  {
        col = "#F8CFCF"  # regular red (light)
        if ( scale < 0 ) { 
-          col = "#E0E0FF" 
           col = "#CBCDFF"  # light blue
-          scale= scale*-1
+#         scale= scale*-1
        } 
        if ( scale > 1 ) {  # dark red
           col = "#DFA2A2" 
        }
-       # half size bar in middle of line
-       #x1=j+.75
-       #x2=j+1.25
+       # create a polygon, a rectangle,
+       # start half size bar in middle of line
        x1=j+.5
        x2=j+1.5
+       # 0 mapped to yminm from the above plot cmd in avglat_func
+       # the rectangle, really a bar in bar plot, will start a 0, ie ymin
        y1=ymin
+       # and extend to percentage of ymax. Scale runs 0 - 1  
+       # so the top of the bar will be at or below ymax     
        y2=ymin+(scale)*ymax
        polygon(c(x1,x2,x2,x1),c(y1,y1,y2,y2), col=col,border=NA)
-       cat("j=",j,"\n") 
+       # put the text value of scale just above ymin, ie just above 0
+       # the bottom of the bar
+       text(c(x1+.5,0), (ymin+0.1*ymax),round(scale,2),adj=c(0,0),col="red")
        print(i)
        j=j+1
      }
@@ -424,16 +430,6 @@ graphit <- function(
      if ( i_plot_9999 == 1 ) {
        polygon(c(cols,rev(cols)),c(p99_00,rev(p99_99)), col="gray95",border=NA)
      }
-     cat("ylims\n")
-     print(ylims)
-     cat("cols\n")
-     print(cols)
-     cat("lat\n")
-     print( c(lat,rev(p95_00))         )
-    #
-     print( log(c(   lat,rev(p95_00))) )
-     cat("p95_00\n")
-     print(p95_00)
    }
 
  #
