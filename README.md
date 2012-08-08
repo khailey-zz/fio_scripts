@@ -23,7 +23,7 @@ files in this project
 + fio.r - create a function called graphit() in R
 + fiog.r  - run graphit on different combinations of data from fioparse.sh
 + fiop.r -  newer version of graphit that adds scalilng info
-+ fiogp.r - use to graph with the newer graphit in fiop.r
++ fiopg.r - use to graph with the newer graphit in fiop.r
 + example data from fioparse.sh
 
 	> data_emc.r   
@@ -225,14 +225,14 @@ for example to set it to C:\Temp
 GRAPH Examples:	 https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-Percentile-Latency
 
 
-Running fiop.r and fiogp.r
+Running fiop.r and fiopg.r
 -----------------------------------------------
-new set of graphs with fiop.r version of graphit(). Use fiogp.r to create a set of graphs from a data set.
+new set of graphs with fiop.r version of graphit(). Use fiopg.r to create a set of graphs from a data set.
 for example
 
 	source("fiop.r")
 	source("data_emc.r")
-	source("fiogp.r")
+	source("fiopg.r")
 
 There three graphs
 1. latency on a log scale
