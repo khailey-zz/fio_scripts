@@ -277,3 +277,53 @@ There three graphs
     are in the right hand axis legend in top graph the latency on log scale
 
 see: https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-percentile-latency-with-scaling
+
+
+New Graphics
+-----------------------------------------------------
+a new version of the function graphit() is created by
+fiop.r and fiopg.r will go through a set of I/O data
+and print out variouis graphs of the data.
+Examples of the graphs are on
+https://plus.google.com/photos/105986002174480058008/albums/5773655476406055489?authkey=CIvKiJnA2eXSbQ
+
+A visual explanation is here
+https://plus.google.com/photos/105986002174480058008/albums/5773661884246310993
+
+A Summary of the graph contents is:
+
+The charts are mainly for exploring the data as opposed to a polished final graph showing I/O performance
+
+A quick recap of the graphics:
+There are 3 graphs
+
+1.  latency on log graph
+2. latency on base 10 graph
+3. throughput bar charts
+
+On the log latency graph latency is shown for
+
+* max latency - dashed red line
+* average latency - solid black line
+* 95% latency - dash black line with grey fill between 95% and average
+* 99% latency - dash black line with light grey fill between 95% and 99% latency
+* latency histogram - buckets represent % of I/Os for that latency.Each bucket is drawn at the y axis height that represents that latency. The buckets are also color coded to help more quickly identify
+* background color - for each load test the background is coded one of 3 colors. 
+* ... yellow - % of I/Os over 10ms
+* ... green - % of I/Os under 10ms
+* ... blue - % of I/Os under 1ms
+
+the idea being that  the graphs should have all green. If the backgrounds are yellow then the I/Os are slow. If the backgrounds are blue then the I/Os represent a certain about of cached reads as opposed to physical spindle reads. 
+
+
+The second graph is latency on base 10 in order to more easily see the slopes of the increasing I/O latency with load.
+On this second graph is also a bar chart in the background. The bars are color coded
+
+* dark red - latency increased and throughput decreases
+* light red - latency increased but throughput also increased
+* light blue - latency actually got faster (shouldn't happen but does)
+
+Ideally the bars are so small they aren't visible which means latency stays the same as load increases. The higher the bar the more the latency changed between tests
+
+The third chart is simply the throughput, ie the MB/s. These bars have slices that represent the percentage of the I/O at the latency that corresponds to that color. The colors are defined in the legend of the top chart.
+

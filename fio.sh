@@ -3,11 +3,9 @@
 #
 #  DIRECT I/O :
 #
-#  direct I/O is used except on ZFS
-#  DelphixOS uses ZFS 
-#  thus
 #  direct is set to 0 if it's detected that fio.sh is running on Delphix
-#  environment variable FDIO=1 will force direct=1 when running on Delphix O/S
+#  environment variable FDIO=1
+#  will direct=1 ven when trunning on Delphix O/S
 #  direct=1 doesn't seem to work on opensolaris even
 #  when opensolaris is the NFS client
 #
@@ -25,11 +23,7 @@ SEEDFILE=fio_random.dat
 
 DIRECT=1
 BINARY="./fio"
-if [ -f /etc/delphix/version ]  ; then 
-  DIRECTORY="/domain0/fiotest"
-else 
-  DIRECTORY="./"
-fi
+DIRECTORY="/domain0/fiotest"
 OUTPUT="."
 TESTS="all"
 SECS="60"
@@ -42,7 +36,6 @@ CUSTOMBLOCKSIZE=-1
 FILE=fiodata
 FILENAME="filename=$FILE"
 RAW=0
-NOZFS=0
 
 DTRACE1=""
 DTRACE2=""
@@ -83,14 +76,13 @@ OPTIONS:
    -u #users       force test to only use this many users
    -l blocksize    force test to only use this blocksize in KB, ie 1-1024 
    -e recordsize   use this recordsize if/when creating the zfs file system, default 8K
-   -z              turn off default ZFS setup, ie creating a domain etc
 
        example
                   fio.sh ./fio.opensolaris /domain0/fiotest  -t rand_read -s 10 -m 1000 -f
 EOF
 }
 
-while getopts hb:r:ce:d:o:it:s:l:u:m:fz OPTION
+while getopts hb:r:e:d:o:it:s:l:u:m:f OPTION
 do
      case $OPTION in
          h)
@@ -129,6 +121,7 @@ do
              ;;
          m)
              MEGABYTES=$OPTARG
+             echo "MEGABYTES=$MEGABYTES"
              MB=1
              ;;
          f)
@@ -140,9 +133,6 @@ do
          t)
              TESTS=$OPTARG
              ;;
-         z)
-             NOZFS=1
-             ;;
          ?)
              usage
              exit
@@ -150,10 +140,7 @@ do
      esac
 done
 
-#
-#  BEGIN {
-#  DTRACE SCRIPT GENERATION FUNCTIONS
-#
+
 
 dtrace_begin()
 {
@@ -188,8 +175,10 @@ dtrace_luns_raw()
 {
  #j=`readlink -f $RAWNAME`
  #  output will have ",raw" at the end, but DTrace matching is without the ",raw"
- j=`readlink -f $RAWNAME |  sed -e 's/,raw/'/`
- echo "lun[\"$j\"] = 1;"
+ for rawdev in `echo $RAWNAME | sed -e 's/:/ /'`; do 
+   j=`readlink -f $rawdev |  sed -e 's/,raw/'/`
+   echo "lun[\"$j\"] = 1;"
+ done
 }
 
 dtrace_end()
@@ -277,35 +266,29 @@ offsets()
      done
 }
 
-#
-#  DTRACE SCRIPT GENERATION FUNCTIONS
-#  END }
-#
-
-#
-#  CUSTOM  WORKFILE SETUP  
-#
+# if there is no filename specified
+# then fio will use a file per processes 
+# instead of a single file
+# the filenames will be generated
+# each generated file will get the same size 
 if [ x$FILENAME == x ] ; then
     SIZE="size=100m"
     if [ x$MB == x1 ]; then
-       SIZE="size=${MEGAYTES}m"
+       SIZE="size=${MEGABYTES}m"
     fi
    OFFSET=0
 fi
+if [ $RAW -eq 1 ] ; then 
+       SIZE="size=${MEGABYTES}m"
+fi
 
 
-#
-#  OUTPUT DIRECTORY SETUP
-#
 mkdir $OUTPUT > /dev/null 2>&1
 if [ ! -d $OUTPUT ]; then 
   echo "directory $OUTPUT does not exist"
   exit
 fi
 
-#
-#   DELPHIX OS DETECTION
-#
 if [ -f /etc/delphix/version ]  ; then 
    DIRECT=0
    # if running on Delphix, then collect DTrace I/O info
@@ -313,9 +296,6 @@ if [ -f /etc/delphix/version ]  ; then
    DTRACE2=" ' -s fio.d  "
 fi
 
-#
-#  DEFINE TESTS TO RUN
-#
 all="randrw read write readrand"
 all="readrand write read "
 if [ $TESTS = "all" ] ; then
@@ -325,6 +305,7 @@ else
 fi
 
 DIRECT=${FDIO:-$DIRECT}
+
 echo "configuration: "
 echo "    binary=$BINARY"
 echo "    work directory=$DIRECTORY"
@@ -339,22 +320,13 @@ echo "    recordsize =$RECORDSIZE"
 echo "    filename (blank if multiple files)=\"$FILENAME\""
 echo "    size per file of multiple files=\"$SIZE\""
 
-
-#
-#  ZFS SETUP
-#
-#   if running on DELPHIX, set up ZFS files system
-#   (this options could be made a command line flag
-#    for other systems that might want to test ZFS)
-#
-#  if running on DELPHIX and not using RAW devices
-#  and NOZFS has not been set
-if [ -f /etc/delphix/version ] && [ $RAW -eq 0 ] && [ $NOZFS -eq 0 ]; then 
+if [ -f /etc/delphix/version ] && [ $RAW -eq 0 ] ; then 
    if [  -f fio.d ]; then 
      if [ ! -f fio.d ]; then
        mv fio.d fio.d.orig
      fi
    fi
+
    # DIRECTORY=/domain0/fiotest
    FILESYSTEM=`echo $DIRECTORY | sed -e 's;^/;;' `
    DOMAIN=`echo $FILESYSTEM    | sed -e 's;/.*;;' `
@@ -427,10 +399,6 @@ if [ -f /etc/delphix/version ] && [ $RAW -eq 0 ] && [ $NOZFS -eq 0 ]; then
    cat $OUTPUT/setup.txt | grep -v PROPERTY | sed -e 's/^/   /' 
 fi 
 
-
-#
-#  DIRECTORY to create I/O test file
-#
 if [ ! -d $DIRECTORY ]; then 
   echo "directory $DIRECTORY does not exist"
   exit
@@ -444,10 +412,6 @@ if [ $FORCE = "n" ] ; then
   fi
 fi
 
-#
-#  DTRACE SETUP 
-#   (should be added as a command line option)
-#
 if [ -f /etc/delphix/version ]  ; then 
    dtrace_begin > fio.d
    if [ $RAW == 1 ] ; then 
@@ -467,14 +431,12 @@ if [ -f /etc/delphix/version ]  ; then
 fi
 
 
-#
-#  CREATE FILE for I/O tests 
-#
+
  if [ ! -f $DIRECTORY/$FILE ]  ||  [ $CREATE == 1  ]; then
    # tar cvf - /opt/delphix/server > /domain0/fiotest/fiodata
-   if [ $RAW == 0 ] ; then  # BEGIN NOT RAW DEVICE {
+   if [ $RAW == 0 ] ; then
     echo "CREATE=$DIRECTORY/$FILE"
-    if [ -f $SEEDFILE ] ; then # BEGIN SEEDFILE {
+    if [ -f $SEEDFILE ] ; then 
        echo "seed file found, using $SEEDFILE"
        loops=0
        while [[ $loops -le $MEGABYTES ]] ; do
@@ -510,12 +472,11 @@ fi
        done
        rm dd.out.$$
        rm /tmp/fio.$$
-   fi # } END SEEDFILE
+   fi
    echo 
    echo "file creation finished"
-  fi # } END NOT RAW DEVICE 
+  fi
  fi
-
 
 if [ $RAW -eq 0 ]; then
    cmd="ls -l $DIRECTORY/$FILE "
