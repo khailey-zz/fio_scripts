@@ -59,13 +59,12 @@ varied.
 	   -h              Show this message
 	   -b  binary      name of fio binary, defaults to ./fio
 	   -d  directory   work directory where fio creates a file and reads and writes, 
-                           default ./ (and default filename created is fiodata) 
+	                           default ./ (and default filename created is fiodata) 
 	   -o  directory   results directory, where to put output files, defaults to ./
 	   -t  tests       tests to run, defaults to readrand,read,write 
-                           options are
-	                      readrand - IOPS test : 8k by 1,8,16,32 users
-	                      read  - MB/s t:w
-est : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
+	                           options are
+		                      readrand - IOPS test : 8k by 1,8,16,32 users
+		                      read  - MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
 	                      write - redo test, ie sync seq writes : 1k, 8k, 128k by 1 user
 	                      randrw   - workload test: 8k read and write by 1,8,16,32 users
 	   -s  seconds     seconds to run each test for, default 60
@@ -186,14 +185,19 @@ Start R and load up the above in R and it creates the dataframe "m"
 	
 In R we can now source "fio.r" which creates a function "graphit(m)"
 
-	source("fio.r")
-	graphit(m)
+	source("fio.r")        # create the graphit() function
+	source("data_ssd.r")   # load some fio data, data_ssd.r is provided in github distro
+	graphit(m)             # graph the data
+	source("fiog.r")       # this will graph various combinations and save the png files 
+	                       # to C:\temp
+	                       # the graphs will be for readrand, read and write tests
+	                       # the graphs will graph different user loads and I/O sizes in the data
 
 By default it will graph 8K random reads.
 If you source "fiog.r" it will run through a series of different combinations graphing them and saving the output.
 The output is save to png files in the directory  C:\TMP
 
-Three different example data files are included
+Example data files are included
 
 * data_emc.r
 * data_ssd.r
@@ -203,7 +207,7 @@ Three different example data files are included
 collected from different systems. The EMC data is one single spindle. The pharos data is striped but
 shared filer. THe ssd data is from two striped SSD devices. The mem data is from using /tmp where /tmp
 is a memory filesystem.
-In order to tests these datasets, simple source them
+In order to graph these datasets, simple source them
 
 	source("data_ssd.r")
 
@@ -222,7 +226,9 @@ you can set working directory with
 
 for example to set it to C:\Temp
 
-GRAPH Examples:	 https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-Percentile-Latency
+GRAPH Examples:	
+
+https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-Percentile-Latency
 
 
 Running fiop.r and fiopg.r
@@ -234,21 +240,25 @@ for example
 	source("data_emc.r")
 	source("fiopg.r")
 
-There three graphs
+Each PNG file will have 3 graphs
+
 1. latency on a log scale
 2. latency on a base 10 scale
 3. throughout MB/s
 
 1: the log scale latency has several parts
 -------------------------------------------
-+ 4 lines
+
+Four lines:
 
 1. max latency - dashed red line
 2. 99% latency - top of light grey shaded area
 3. 95% latency - top of dark grey shaded area
 4. avg latency   - black line
 
-+ back ground is shaded with bars 0 percent at bottom to 100% at top
+Plus:
+
++ back ground is barchaerts, 0 percent at bottom to 100% at top
 
         light blue % of I/Os below 1ms - probably some sort of cache read
         green % of I/Os below 10ms
@@ -276,7 +286,9 @@ There three graphs
     the bars are color code with amount percentage of throughput that had a latency of that color where colors
     are in the right hand axis legend in top graph the latency on log scale
 
-see: https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-percentile-latency-with-scaling
+see: 
+
+https://sites.google.com/site/oraclemonitor/i-o-graphics#TOC-percentile-latency-with-scaling
 
 
 New Graphics
@@ -284,10 +296,13 @@ New Graphics
 a new version of the function graphit() is created by
 fiop.r and fiopg.r will go through a set of I/O data
 and print out variouis graphs of the data.
+
 Examples of the graphs are on
+
 https://plus.google.com/photos/105986002174480058008/albums/5773655476406055489?authkey=CIvKiJnA2eXSbQ
 
 A visual explanation is here
+
 https://plus.google.com/photos/105986002174480058008/albums/5773661884246310993
 
 A Summary of the graph contents is:

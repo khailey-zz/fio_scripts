@@ -278,9 +278,14 @@ if [ x$FILENAME == x ] ; then
     fi
    OFFSET=0
 fi
-if [ $RAW -eq 1 ] ; then 
-       SIZE="size=${MEGABYTES}m"
-fi
+#
+#  Looks like RAW will determine the
+#  device size and not use the size
+#  given in the input
+#
+#if [ $RAW -eq 1 ] ; then 
+#       SIZE="size=${MEGABYTES}m"
+#fi
 
 
 mkdir $OUTPUT > /dev/null 2>&1
