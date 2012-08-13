@@ -254,9 +254,13 @@ graphit <- function(
      #      which is bad, ie the throughput actually decreases           
      #   negative values are where the latency actual got faster
      #   at higher x values
+
+     #  intialize the vectors to NA values but correct length
         scaling <- rep(NA,(length(lat)-1) )
+        scalecolor <- rep(NA,(length(lat)-1) )
         for ( i in 1:(length(lat)-1) ) {
              cat("lat_a ",lat[i],"lat_b",lat[i+1],"\n")
+             cat("scalex_a ",scalingx[i],"scalex_b",scalingx[i+1],"\n")
              lat_f = lat[i+1]/lat[i]
              sca_f = scalingx[i+1]/scalingx[i]
              cat("lat_f[",i,"]=",lat_f,"\n")
@@ -266,7 +270,15 @@ graphit <- function(
            # want to graphically exagerate the higher values and dampen the smaller values
              scaling[i] <- 2^(scalei*10)/1024  # > 1 means throughput is going down 2^(1*10)
              cat("scalei exp",scaling[i],"\n")
-             if ( lat[i] > lat[i+1] ) { scaling[i] <- scaling[i]*(-1) }
+             scalecolor[i] <- "#F8CFCF"  # regular red (light)
+             if ( lat[i] > lat[i+1] ) { 
+               scaling[i] <- scaling[i]*(-1) 
+               scalecolor[i] <-  "#CBCDFF"  # light blue
+             }
+           # not quite sure how this happens, but in some cases
+           # latency goes up by a smaller factor the users or block size
+           # yet throughput goes down, in this case
+             if ( MB[i] > MB[i+1] ) { scalecolor[i] <-  "#DFA2A2"  } # dark red
         }
 
   #
@@ -302,12 +314,19 @@ graphit <- function(
   #
   #     MB/s BARS in bottom graph
   #
-     MBbars <- t(t(fhist)*MB)
+     logMB <- log(MB+1)
+  #  MBbars <- t(t(fhist)*MB)
+     MBbars <- t(t(fhist)*logMB)
      colnames(MBbars) = col_lables
   #            B  L  T  R
      par(mar=c(2, 4, 0, 4))
-     op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=1, ylim=c(0,100),xlim=c(1,2*length(lat)+1))
-     text(op, 0,round(MB),adj=c(0.2,-1.4),col="gray20")
+     op <- barplot(MBbars,col=colors,ylab="MB/s",border=NA,space=1, ylim=c(0,log(1200)),xlim=c(1,2*length(lat)+1),
+            yaxt  = "n" )
+     text(op, pmin((logMB),log(400)),round(MB),adj=c(0.2,-.2),col="gray20")
+
+    ypts  <-  c(    log(2),       log(11),    log(101),  log(1001));
+    ylbs  <-  c(  "1",  "10", "100",  "1000");
+    axis(2,at=ypts, labels=ylbs)
 
 #    j=2
 #    for ( i in  scaling  )  {
@@ -365,7 +384,7 @@ graphit <- function(
             lwd   = 1, 
             bty   = "l", 
             xlim  = c(xminwidth,xmaxwidth), 
-            ylim  = c(ymin,ymax), 
+            ylim  = c(ymin,ymax*1.1), 
             ylab  = "" , 
             xlab  = "",
             log   = "", 
@@ -377,15 +396,20 @@ graphit <- function(
      #
      # SCALING BARs
      #
-     for ( scale in  scaling  )  {
+     # for ( scale in  scaling  )  {
+     # }
+     for ( i in  1:(length(lat)-1)  )  {
+       scale <- scaling[i] 
        col = "#F8CFCF"  # regular red (light)
        if ( scale < 0 ) { 
           col = "#CBCDFF"  # light blue
-#         scale= scale*-1
+          scale= scale*-1
        } 
        if ( scale > 1 ) {  # dark red
           col = "#DFA2A2" 
        }
+       col=scalecolor[i]
+       cat("scalecolor ", col," i=", i ,"\n")
        # create a polygon, a rectangle,
        # start half size bar in middle of line
        x1=j+.5
@@ -399,7 +423,7 @@ graphit <- function(
        polygon(c(x1,x2,x2,x1),c(y1,y1,y2,y2), col=col,border=NA)
        # put the text value of scale just above ymin, ie just above 0
        # the bottom of the bar
-       text(c(x1+.5,0), (ymin+0.1*ymax),round(scale,2),adj=c(0,0),col="red")
+       text(c(x1+.5,0), (ymin+0.1*ymax),round(scale,2),adj=c(0,0),col="gray60")
        print(i)
        j=j+1
      }
@@ -426,7 +450,7 @@ graphit <- function(
   #
   # ms10 SUCCESS overlay on top graph ( latency lines )
   #
-    op <- barplot(ms10, col=c("#E0E0FF", "#F0FFE0",  "#FFF6A0"),ylim =c(0,1), xlab="", ylab="",border=NA,space=0,yaxt="n",xaxt="n") 
+    op <- barplot(ms10, col=c("#C6D4F8", "#C9FACF",  "#FFF6A0"),ylim =c(0,1), xlab="", ylab="",border=NA,space=0,yaxt="n",xaxt="n") 
     par(new = TRUE )
 
   # AVERGE get's ploted twice because there has to be something to initialize the graph
