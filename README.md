@@ -1,4 +1,3 @@
-
 fio_scripts
 ===========
 
@@ -18,11 +17,11 @@ iozone and bonnie++, but fio seems to be the most flexible with
 
 files in this project
 
-+ fio.sh - run sets of I/O benchmarks using fio
++ fio.sh - run a set of I/O benchmarks using fio
 + fioparse.sh - parse the output files from fio.sh runs
 + fio.r - create a function called graphit() in R
 + fiog.r  - run graphit on different combinations of data from fioparse.sh
-+ fiop.r -  newer version of graphit that adds scalilng info
++ fiop.r -  newer version of graphit that adds scaling info
 + fiopg.r - use to graph with the newer graphit in fiop.r
 + example data from fioparse.sh
 
