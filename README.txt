@@ -25,16 +25,31 @@
 
 Files
 
-   fio.r  - graphs just avg,95,99.5,99 and max in one set
-                   and histograms in another set
-                   no scaling 
-   fiog.r 
+   old version
 
-   fiop.r  - graphs histograms nad 95% and 99% in one graph
-   fiopg.r
+     fio.r   - creates  graphit(), no scaling 
+     fiog.r  - for a given m, graphs 2 sets
+               graphs avg,95,99.5,99 and max in one set
+                      and histograms in another set
 
-   grade.r
-   gradeg.r - generates grades for many different datasets
-   gradeonly.r -  only  generate the grades, no graph ?
+   new version
+
+     fiop.r  - creates graphit()
+     fiopg.r - has scaling graph as well
+
+   report card
+
+     grade.r    creates chart_grades()
+     gradeg.r - generates grades for many different datasets
+     gradeonly.r -  only  generate the grades, no graph ?
+
+graphit() has many options thus the "g" files are used
+          to iterate through many options
+
+chart_grades() has no options so can be run as chart_grades(m)
+
+
+
+
 
 
