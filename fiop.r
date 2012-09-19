@@ -9,9 +9,10 @@
 #   example m data frames in the files data_[type].r
 #   source one of the files to instantiate an m
 #
-#   to create a m data.frame on fio output files run
+#   to create a m data.frame from fio output files run
 #   fioparse [ list of output files] > data_type.r
 #   then source data_type.r in your R session
+#      source("data_type.r")
 #
 #   default graphit(m) graphs random reads across varying user
 #   loads, so the m data has to have at least one random read run
@@ -261,11 +262,14 @@ graphit <- function(
         for ( i in 1:(length(lat)-1) ) {
              cat("lat_a ",lat[i],"lat_b",lat[i+1],"\n")
              cat("scalex_a ",scalingx[i],"scalex_b",scalingx[i+1],"\n")
+             # ratio of latency at i+1 to i , factor of increase
              lat_f = lat[i+1]/lat[i]
+             # ratio of incease in user count or blocksize
              sca_f = scalingx[i+1]/scalingx[i]
              cat("lat_f[",i,"]=",lat_f,"\n")
              cat("sca_f[",i,"]=",sca_f,"\n")
-             scalei <- lat_f/sca_f
+             # ratio of increase in latency over increase load (users or blocksize)
+             scalei <- (lat_f)/sca_f
              cat("scalei ",scalei,"\n")
            # want to graphically exagerate the higher values and dampen the smaller values
              scaling[i] <- 2^(scalei*10)/1024  # > 1 means throughput is going down 2^(1*10)
