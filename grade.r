@@ -82,15 +82,6 @@ chart_grades <- function(m)  {
             "#4F0000") # 5s    16 dark red 2
    lcolors <- c(
             "#9999FF", # 1  violet
-            "#66CCFF", # 4  aqau
-            "#99FFFF", # 3  cyan
-            "#B0FFB0", # 5  gren
-            "#FFFF99", # 6  yello
-            "#FFB090", # 7  orange
-            "#FFB0B0"  # 7  orange
-             )
-   lcolors <- c(
-            "#9999FF", # 1  violet
             "#66FFFF", # 2  aqau
             "#99FFFF", # 3  cyan
             "#B0FFB0", # 4  gren
@@ -203,7 +194,7 @@ chart_grades <- function(m)  {
   par(mar=c(4, 1, 2, 6))
 
   #
-  # GRAPH HISTOGRAMS
+  # GRAPHS 
   #
   background = thist*0+.98
   background = thist*0+.01
@@ -222,8 +213,6 @@ chart_grades <- function(m)  {
      #
      #  right side grey line
      # 
-     #   shading test
-     #   
      #    sets up the plot
      #   
          bp <- barplot(c(zeros,back), horiz = FALSE, axes = TRUE,
@@ -233,13 +222,15 @@ chart_grades <- function(m)  {
 
      # right side second set
      #
-     #   ZOOM in on latency rainbow
+     #   middle latency graph
      #
         par(new = TRUE)
         if ( i < 5 ) {
          #
          #  color ribbon on bottom of chart
          #
+         # there are 7 grades, A+,A,A-,B,B-,C,C- 
+         # for each draw the coresponding color at the bottom of graph
          for ( j in 7:1  ) {
            latg=as.numeric(gm[j,(i)])
            #x=(log10(latg)*3)-4
@@ -273,19 +264,18 @@ chart_grades <- function(m)  {
         cat("lati ",lati,"\n")
         if ( lati < 0  )   { lati = 0 ; color="blue"}
         x1=x4=lati +     nrow(thist) +1
-        x2=x3=lati + .2 +nrow(thist) +1
+        x2=x3=lati + .4 +nrow(thist) +1
         y1=y2=.1
         y3=y4=.3
-        #grade=round(as.numeric(m$grade95[i]),2)
-        #grade[i]= sprintf(" %-2s/%-2s %4.1f/%2.1f    ",  
-        #  m[i,'grade95'],m[i,'gscale95'],  m[i,'p95_00'],as.numeric(m[i,'scale95']))
         #
         # latency line in middle graph
         #
         polygon(c(x1,x2,x3,x4),c(y1,y2,y3,y4), col=color,border=NA)
+
         # latency = gradex
         gradex=sprintf("%4.1f",  m[i,'p95_00'] )
         text((x2-1),(y1+.4),gradex,adj=c(0,1),col="gray60",cex=1)
+
         # letter grade
         text((x2-1),y1+.6,m$grade95[i],adj=c(0,1),col="gray20",cex=1,font=2)
         if ( color == "red" ) {
@@ -313,7 +303,7 @@ chart_grades <- function(m)  {
         }
         if ( lati < 0  )   { lati = 0 }
         x1=x4=lati +     nrow(thist) +1
-        x2=x3=lati + .2 +nrow(thist) +1
+        x2=x3=lati + .4 +nrow(thist) +1
         y1=y2=.1
         y3=y4=.3
         polygon(c(x1,x2,x3,x4),c(y1,y2,y3,y4), col=color,border=NA)
@@ -379,15 +369,11 @@ chart_grades <- function(m)  {
   #
   xlbs=c("us50","us100","us250","us500","ms1","ms2","ms4","ms10","ms20","ms50","ms100","ms200","ms500","s1","s2","s5" )
   for ( j in 1:length(xlbs) ) {
-     #axis(1,at=j-.5, labels=xlbs[j],col=colors[j],las=2,cex.axis=.75,lty=1,lwd=1)
      axis(1,at=j, labels=xlbs[j],col="gray60",las=2,cex.axis=.75,lty=1,lwd=1)
   }
   #
   # left hand y axis labels
   #
-# for ( j in 1:length(ylbs) ) {
-#     axis(2,at=(j+.2), labels=ylbs[j],col=colors[j],las=1,cex.axis=1.25)
-# }
   #
   #  GRADE STRING ex  "A/A 99.9/0.9"
   #
@@ -396,14 +382,6 @@ chart_grades <- function(m)  {
      grade[i]= sprintf(" %-2s/%-2s %4.1f/%2.1f    ",  
           m[i,'grade95'],m[i,'gscale95'],  m[i,'p95_00'],as.numeric(m[i,'scale95']))
   }
-  #
-  # right hand y axis labels
-  #
-# windowsFonts( A=windowsFont("TT Courier New"))
-# for ( j in 1:nrow(m) ) {
-#     axis(4,at=(j+.2), labels=grade[j],las=1,cex.axis=1.25, family="A" )
-# }
-
 
   #
   #  SCALING WIDGET
@@ -418,31 +396,15 @@ chart_grades <- function(m)  {
      y1 = j+.1
      y2 = j+.15
      scale=as.numeric(m$scale95[j,])
-    # gscale <- matrix(c(.05,"A+",     
-    #                     .1,"A", 
-    #                     .2,"A-", 
-    #                     .3,"B", 
-    #                     .4,"B-", 
-    #                     .6,"C", 
-    #                     .9,"C-" ), nrow=2)
-    #    "#A0F0A0",     1
-    #    "#A0C060" ,    2
-    #    "#A0A060" ,    3
-    #    "#A05060" ,    4
-    #    "#A03060" ,    5
-    #    "#A00060" )    6 
-    scalecolors = c("#A0F0A0" ,  #  1  A+
+     scalecolors = c("#A0F0A0" ,  #  1  A+
                   "#A0C060" ,    #  2  A 
                   "#A0A060" ,    #  3  A-
                   "#A08080" ,    #  4  B 
                   "#A06060" ,    #  5  B-
                   "#A03060" ,    #  6  C
                   "#A00060"      #  7  C-
-                  #,"#800000"     #  8
-                  #,"#FF0000"     # 9
                      )
      col = scalecolors[1]
-    # gscale <- matrix(c(.05,"A+", .1,"A", .2,"A-", .3,"B", .4,"B-", .6,"C", .9,"C-" ), nrow=2)
      if ( scale > gscale[1,1] ) { col =scalecolors[2]} #.05 - .1   A
      if ( scale > gscale[2,1] ) { col =scalecolors[3]} # .1 - .2   A-
      if ( scale > gscale[3,1] ) { col =scalecolors[4]} # .2 - .3   B
@@ -451,28 +413,24 @@ chart_grades <- function(m)  {
      if ( scale > gscale[6,1] ) { col =scalecolors[7]}   # .6 - .9
      if ( scale > gscale[7,1] ) { col ="red"}   # .6 - .9
      if ( scale > 1 ) { col ="red"} 
-     #col="gray30"
+
      # if scale less than 1, move left down and right up
      if (scale <= 1 ) {
-       #scale=scale/2
-       #polygon(c(x1,x2,x2,x1),c(y1,y1,y2+scale,y2-scale), col=col,border=NA)
        scale=scale/2
        polygon(c(x1,x2,x2,x1),c(y1,y1,y2+scale,y1), col=col,border=NA)
+
      # if scale more than 1, move left to the right and right up
      } else {
        scale = 1 - (1 /(scale) )
        #polygon(c(x1+scale,x2,x2,x2-scale),c(y1,y1,y2,y2), col=col,border=NA)
        polygon(c(x1+scale,x2,x2,x1),c(y1,y1,y2+.25,y1), col=col,border=NA)
      }
+
      scale=round(as.numeric(m$scale95[j,]),2)
      text((x1+.1),y1+.2,scale,        adj=c(-.0,1),col="gray60",cex=1)
      text((x1+.1),y1+.5,m$gscale95[j],adj=c(-.3,1),col="gray60",cex=1)
   }
 
-
-# for ( j in 1:length(xlbs) ) {
-#       segments(j,   0,  j,  ymaxwidth -1 ,    lwd=1,lty=1, col= colors[j])
-# }
 
   #
   #  GRAPH borders for all graphs
