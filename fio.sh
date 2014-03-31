@@ -100,7 +100,7 @@ OPTIONS:
 EOF
 }
 
-while getopts hz:ycb:nr:xe:d:o:it:s:l:u:m:f:w OPTION
+while getopts hz:ycb:nr:xe:d:o:it:s:l:u:m:fw: OPTION
 do
      case $OPTION in
          h)
