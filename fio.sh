@@ -29,7 +29,7 @@ DIRECT=1
 INITIALIZE=0
 # by default  don't remove the data file after the tests
 REMOVE=0
-BINARY="./fio"
+BINARY=`which fio`
 DIRECTORY="/domain0/fiotest"
 OUTPUT="."
 TESTS="all"
@@ -684,7 +684,7 @@ for job in $jobs; do # {
          PREFIX="$OUTPUT/${job}_u${USERS}_kb${READSIZE}"
          JOBFILE=${PREFIX}.job
          init
-         offset
+         offsets
         # sudo dtrace -c 'fio jobfile' -s fio.d > jobfile.out
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
