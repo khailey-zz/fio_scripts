@@ -224,6 +224,9 @@ you can set working directory with
 	setwd("C:\\Temp\\")
 
 for example to set it to C:\Temp
+if the data is in a csv file you can load it with
+
+        m <- read.csv("data_ssd.csv")
 
 GRAPH Examples:	
 
