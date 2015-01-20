@@ -6,6 +6,8 @@ fio, parsing the fio data and graphing the output.
 There are a lot of I/O benchmarking tools out there, most noteably
 iozone and bonnie++, but fio seems to be the most flexible with
  the most active user community
+ 
+ NOTE: the scripts work on fio 2.0.7 but possibly not on other versions
 
 * fio project: http://freecode.com/projects/fio
 * download: http://brick.kernel.dk/snaps/fio-2.0.7.tar.gz
