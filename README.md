@@ -1,7 +1,7 @@
 fio_scripts
 ===========
 
-Thses scripts are for facilitating running the I/O benchmark tool
+Theses scripts are for facilitating running the I/O benchmark tool
 fio, parsing the fio data and graphing the output.
 There are a lot of I/O benchmarking tools out there, most noteably
 iozone and bonnie++, but fio seems to be the most flexible with
