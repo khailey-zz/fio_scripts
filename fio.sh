@@ -324,7 +324,7 @@ if [ -f /etc/delphix/version ]  ; then
 fi
 
 all="randrw read write readrand"
-all="readrand write read "
+all="randread read write randwrite"
 if [ $TESTS = "all" ] ; then
   jobs=$all
 else 
@@ -629,12 +629,12 @@ done >> $JOBFILE
 
 
 # read random, set blocksize, vary # of  users
-function readrand {
+function randread {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
 rw=randread
-bs=8k
+bs=${RANDREADSIZE}k
 numjobs=1
 offset=$OFFSET
 EOF
@@ -648,6 +648,20 @@ cat << EOF
 [job$JOBNUMBER]
 rw=write
 bs=${WRITESIZE}k
+numjobs=1
+offset=$OFFSET
+sync=1
+direct=0
+EOF
+done >> $JOBFILE
+}
+
+function randwrite {
+for i in 1 ; do
+cat << EOF
+[job$JOBNUMBER]
+rw=randwrite
+bs=${RANDWRITESIZE}k
 numjobs=1
 offset=$OFFSET
 sync=1
@@ -678,6 +692,17 @@ for job in $jobs; do # {
          if [  $CUSTOMBLOCKSIZE > -1 ] ; then
              WRITESIZE=$CUSTOMBLOCKSIZE
              READSIZE=$CUSTOMBLOCKSIZE
+             RANDWRITESIZE=$CUSTOMBLOCKSIZE
+             RANDREADSIZE=$CUSTOMBLOCKSIZE
+         fi
+         if [ $READSIZE -le 9 ]; then
+             READSIZE=000${READSIZE}
+         elif [ $READSIZE -le 99 ] && [ $READSIZE -gt 9 ] ; then
+             READSIZE=00${READSIZE}
+         elif [ $READSIZE -le 999 ] && [ $READSIZE -gt 99 ] ; then
+             READSIZE=0${READSIZE}
+         else
+            READSIZE=${READSIZE};
          fi
          loops=1
          OFFSET=0

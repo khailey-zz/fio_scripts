@@ -314,6 +314,7 @@ sub print_hist {
              $type =~ s/[ 	]*//;
              $iops =~ s/.*iops=//;
              $iops =~ s/ .*//;
+             $iops =~ s/,//;
              #printf("   type:%s; iops:%s; line:%s;\n",$type,$iops,$line);
              $iops{$type}=$iops;
              next;
@@ -550,12 +551,12 @@ sub print_hist {
     if ( $line =~ m/END/ ) {
        if ( $rplots ==  0 ) { 
             #hist_head; 
-            printf("%8s", $benchmark);
+            printf("%9s", $benchmark);
             printf("%3s", $users);
             printf("%5s", $bs);
 #           foreach $type ( "read", "write" ) {
 #   $type = "read" ;
- 	    if ( $benchmark eq "write" ) {
+ 	    if ( $benchmark =~ m/write/ ) {
  		   $type="write" ;
  		   $dtype="W" ;
  	   } else {
