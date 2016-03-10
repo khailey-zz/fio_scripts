@@ -6,14 +6,14 @@ new_xls.py
 
 test_all.sh
 ===========
-> all="1 2 4 8 16 32 64 128 256 512 1024"
-> for i in $all; 
-> do
->	echo $i;
->	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32
->    sh fioparse.sh *.out > out
->	python new_xls.py
-> done
+	> all="1 2 4 8 16 32 64 128 256 512 1024"
+	> for i in $all; 
+	> do
+	>	echo $i;
+	>	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32
+	>    sh fioparse.sh *.out > out
+	>	python new_xls.py
+	> done
 
 + you need modify devices name and set -s -l -f -u and so on
 
