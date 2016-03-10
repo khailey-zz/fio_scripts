@@ -73,7 +73,7 @@ shift $((OPTIND-1))
 # print header line
 
 if [ $RPLOTS -eq 0 ] ; then
-  echo -n "test  users size         MB       ms      min      max      std    IOPS"
+  echo -n "test    users size        MB          ms         min        max        std    IOPS"
   if [ $VERBOSE -eq 1 ] ; then
     echo  -n "    50us   1ms   4ms  10ms  20ms  50ms   .1s    1s    2s   2s+"
   fi
@@ -566,11 +566,11 @@ sub print_hist {
                 if ( $iops{$type} > 0 ) { 
                      printf(" %-1.1s", $type);
                      printf("%9.3f", $throughput{$type}/1048576);
-                     printf("%9.3f", $lat{$type}/1000);
+                     printf("%12.3f", $lat{$type}/1000);
 
-                     printf("%9.3f", $latmin{$type}/1000);
-                     printf("%9.3f", $latmax{$type}/1000);
-                     printf("%9.3f", $latstd{$type}/1000);
+                     printf("%12.3f", $latmin{$type}/1000);
+                     printf("%12.3f", $latmax{$type}/1000);
+                     printf("%12.3f", $latstd{$type}/1000);
 
                      #printf("%8s", $unit{$type});
                      printf("%8s", $iops{$type});
