@@ -6,7 +6,7 @@ wb = xlsxwriter.Workbook("test.xlsx")
 ws = wb.add_worksheet()
 randread,read,write,randwrite={},{},{},{}
 title = ["100% Read; 100% random","100% Read; 0% random","0% Read; 100% random","0% Read; 0% random"]
-item = ["IOPS","MBPS","Average(ms)","Max(us)"] * 4
+item = ["IOPS","MBPS","Average(ms)","Max(ms)"] * 4
 y_axis = ["1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M"]
 
 format=wb.add_format()    #定义format格式对象
@@ -68,10 +68,10 @@ def generate_data():
 
     for i in range(3,14):
         key = y_axis[i-3]
-        x_axis = [ float(randread[key][j]) for j in [5,0,2,3] ]
-        x_axis = x_axis + [ float(read[key][j]) for j in [5,0,2,3]]
-        x_axis = x_axis + [ float(randwrite[key][j]) for j in [5,0,2,3]]
-        x_axis = x_axis + [ float(write[key][j]) for j in [5,0,2,3]]
+        x_axis = [ float(randread[key][j]) for j in [5,0,1,3] ]
+        x_axis = x_axis + [ float(read[key][j]) for j in [5,0,1,3]]
+        x_axis = x_axis + [ float(randwrite[key][j]) for j in [5,0,1,3]]
+        x_axis = x_axis + [ float(write[key][j]) for j in [5,0,1,3]]
         ws.write_row('B%d'%i,x_axis,format)
 
 def generate_chart():
