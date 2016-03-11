@@ -10,10 +10,10 @@ test_all.sh
 	> for i in $all; 
 	> do
 	>	echo $i;
-	>	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32
-	>    sh fioparse.sh *.out > out
-	>	python new_xls.py
+	>	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32 
 	> done
+	>   sh fioparse.sh *.out > out
+	>	python new_xls.py
 
 + you need modify devices name and set -s -l -f -u and so on
 
