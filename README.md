@@ -10,12 +10,12 @@ test_all.sh
 	> for i in $all; 
 	> do
 	>	echo $i;
-	>	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32 
+	>	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32 -p YES
 	> done
 	>   sh fioparse.sh *.out > out
 	>	python new_xls.py
 
-+ you need modify devices name and set -s -l -f -u and so on
++ you need modify devices name and set -s (runtime) -l (blocksize) -f (force) -u (numjobs) -p (preheat) and so on
 
 
 
