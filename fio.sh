@@ -94,6 +94,7 @@ OPTIONS:
                    writes will be evenly written across multiple devices,  default is 64GB
    -z raw_sizes    size of each raw device. If multiple, colon separate, list inorder of raw_device
    -r raw_device   use raw device instead of file, multi devices colon separated
+   -p preheat      performance testing need to preheat.YES or NO,default YES.
                           
        example
                   fio.sh ./fio.opensolaris /domain0/fiotest  -t rand_read -s 10 -m 1000 -f
@@ -162,6 +163,9 @@ do
              ;;
          z)
              RAWSIZES=$OPTARG
+             ;;
+         p)  
+             PREHEAT="NO"
              ;;
          ?)
              usage
@@ -711,6 +715,13 @@ for job in $jobs; do # {
          init
          offsets
         # sudo dtrace -c 'fio jobfile' -s fio.d > jobfile.out
+         if [ $PREHEAT == "YES" ] ; then
+             cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2"
+             echo $cmd
+             [[ $EVAL -eq 1 ]] && eval $cmd
+             cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2"
+             echo $cmd
+             [[ $EVAL -eq 1 ]] && eval $cmd
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
