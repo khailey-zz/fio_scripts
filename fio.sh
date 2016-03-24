@@ -22,7 +22,7 @@ SECONDARYCACHE=metadata
 # to use compression or not when creating a ZFS filesystem
 COMPRESSION=on
 COMPRESSION=off
-
+PREHEAT="NO"
 # by default use DIRECT I/O
 DIRECT=1
 # by default  don't initialize raw devices with writes
@@ -94,14 +94,14 @@ OPTIONS:
                    writes will be evenly written across multiple devices,  default is 64GB
    -z raw_sizes    size of each raw device. If multiple, colon separate, list inorder of raw_device
    -r raw_device   use raw device instead of file, multi devices colon separated
-   -p preheat      performance testing need to preheat.YES or NO,default YES.
+   -p preheat      performance testing need to preheat.YES or NO,default NO 
                           
        example
                   fio.sh ./fio.opensolaris /domain0/fiotest  -t rand_read -s 10 -m 1000 -f
 EOF
 }
 
-while getopts hz:ycb:nr:xe:d:o:it:s:l:u:m:f OPTION
+while getopts hz:ycb:nr:xe:d:o:it:s:l:u:m:p:f OPTION
 do
      case $OPTION in
          h)
@@ -165,7 +165,7 @@ do
              RAWSIZES=$OPTARG
              ;;
          p)  
-             PREHEAT="NO"
+             PREHEAT=$OPTARG
              ;;
          ?)
              usage
@@ -722,6 +722,7 @@ for job in $jobs; do # {
              cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2"
              echo $cmd
              [[ $EVAL -eq 1 ]] && eval $cmd
+         fi
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
