@@ -816,5 +816,5 @@ if [ $REMOVE == 1 ]  && [ $RAW == 0 ] ; then  # {
     echo "cmd=$cmd"
     eval $cmd
 fi # }
-./fioparse.sh  $OUTPUT/*out  > $OUTPUT/fio_summary.out 
+sh fioparse.sh  $OUTPUT/*out  > $OUTPUT/fio_summary.out 
 cat $OUTPUT/fio_summary.out
