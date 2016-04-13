@@ -599,6 +599,7 @@ randrepeat=0
 end_fsync=1
 group_reporting=1
 ioengine=psync
+ramp_time=6
 fadvise_hint=0
 EOF
 done > $JOBFILE
