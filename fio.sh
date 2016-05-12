@@ -350,6 +350,7 @@ echo "    custom blocksize=$CUSTOMBLOCKSIZE"
 echo "    recordsize =$RECORDSIZE"
 echo "    filename (blank if multiple files)=\"$FILENAME\""
 echo "    size per file of multiple files=\"$SIZE\""
+echo "    performance testing preheat choice is $PREHEAT"
 
 
 # if running on Delphix and not using RAW LUNs, ie using /domain0
