@@ -1,13 +1,16 @@
 #coding:gbk
 import xlsxwriter
 import re
+import os
 
 wb = xlsxwriter.Workbook("test.xlsx")
 ws = wb.add_worksheet()
 randread,read,write,randwrite={},{},{},{}
 title = ["100% Read; 100% random","100% Read; 0% random","0% Read; 100% random","0% Read; 0% random"]
 item = ["IOPS","MBPS","Average(ms)","Max(ms)"] * 4
-y_axis = ["1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M"]
+out = os.popen("cat out | grep randread | awk '{print $3}'").read()
+#y_axis = ["1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M"]
+y_axis = [ i for i  in out.split('\n') if i ]
 
 format=wb.add_format()    #定义format格式对象
 format.set_border(1)    #定义format对象单元格边框加粗(1像素)的格式
@@ -46,8 +49,8 @@ def chart_series(letter):
     chart.set_y_axis({'name': item[ss.index(letter)%4]})    #设置y轴（左侧）小标题
     chart.set_x_axis({'name': 'blocksize'})    #设置y轴（左侧）小标题
     chart.add_series({
-        'categories': '=Sheet1!$A$3:$A$13',    #将“星期一至星期日”作为图表数据标签(X轴)
-        'values':     '=Sheet1!$%s$3:$%s$13'%(letter,letter) ,   #频道一周所有数据作
+        'categories': '=Sheet1!$A$3:$A$%d'%(3+len(y_axis)),    #将“星期一至星期日”作为图表数据标签(X轴)
+        'values':     '=Sheet1!$%s$3:$%s$%d'%(letter,letter,3+len(y_axis)) ,   #频道一周所有数据作
                                                                #为数据区域
         'line':       {'color': 'green'},    #线条颜色定义为black(黑色)
         #'name': '=Sheet1!$A$'+cur_row,    #引用业务名称为图例项
@@ -66,7 +69,7 @@ def generate_data():
 
     get_data()
 
-    for i in range(3,14):
+    for i in range(3,3+len(y_axis)):
         key = y_axis[i-3]
         x_axis = [ float(randread[key][j]) for j in [5,0,1,3] ]
         x_axis = x_axis + [ float(read[key][j]) for j in [5,0,1,3]]
