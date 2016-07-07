@@ -1,3 +1,5 @@
+SSD
+
 test  users size         MB       ms      min      max      std    IOPS 
                                             
     read1 thread   8K r  332.732    0.023    0.001    1.806    0.050  42589,
@@ -22,3 +24,29 @@ randread64 threads   8K r  476.948    1.045    0.001   11.564    0.582  61049,
    write16 threads   1K w   25.519    0.609    0.075   19.043    1.232  26131,
    write16 threads   8K w   51.554    2.416    0.114   20.059    2.295   6598,
    write16 threads 128K w  291.358    6.850    1.000   22.000    3.780   2330,
+
+SSHD
+test  users size         MB       ms      min      max      std    IOPS 
+                                            
+    read1 thread   8K r   41.059    0.186    0.001   61.708    0.586   5255,
+    read1 thread  32K r  119.063    0.259    0.004   77.673    0.949   3810,
+    read1 thread 128K r  136.147    0.913    0.017   18.558    1.622   1089,
+    read1 thread   1M r  134.465    7.427    0.148   28.105    7.220    134,
+    read8 threads   1M r  118.557   65.848    0.148  454.088  101.805    118,
+    read16 threads   1M r  116.111  134.463    0.148  664.527  175.163    116,
+    read32 threads   1M r  107.651  278.940    0.152 1280.700  328.096    107,
+    read64 threads   1M r  103.520  554.952    0.154 1587.900  609.656    103,
+randread1 thread   8K r    0.533   14.608    0.005  138.783    8.989     68,
+randread8 threads   8K r    0.767   80.769    0.035  256.965   53.891     98,
+randread16 threads   8K r    0.801  152.982    0.012  331.538   63.256    102,
+randread32 threads   8K r    0.810  298.122    0.015  519.073   79.781    103,
+randread64 threads   8K r    0.796  590.696    0.030  808.146  143.490    101,
+   write1 thread   1K w    0.912    1.060    0.182   45.003    1.159    934,
+   write1 thread   8K w   48.809    0.154    0.064   20.501    0.234   6247,
+   write1 thread 128K w   85.059    1.463    0.358  187.563    7.409    680,
+   write4 threads   1K w    0.948    4.107    0.137   69.188    5.254    971,
+   write4 threads   8K w   53.524    0.579    0.249   41.495    0.810   6851,
+   write4 threads 128K w   63.181    7.902    0.731  241.298   17.407    505,
+   write16 threads   1K w    1.068   14.601    0.563  152.303   12.811   1094,
+   write16 threads   8K w   37.590    3.318    0.471  184.449    7.078   4811,
+   write16 threads 128K w   66.227   29.981    0.956  300.053   29.468    529,
