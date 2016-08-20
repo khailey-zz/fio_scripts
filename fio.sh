@@ -337,8 +337,8 @@ if [ -f /etc/delphix/version ]  ; then
    fi
 fi
 
-all="randrw read write readrand"
-all="write randwrite read randread"
+#all="randrw read write readrand"
+all="write randwrite randrw read randread"
 if [ $TESTS = "all" ] ; then
   jobs=$all
 else 
@@ -621,12 +621,11 @@ done > $JOBFILE
 function randrw {
 for i in 1 ; do
 cat << EOF
-[job]
+[job$JOBNUMBER]
 rw=randrw
-rwmixread=80
-bs=8k
-sync=0
-numjobs=$USERS
+rwmixread=70
+bs=${READSIZE}k
+numjobs=$JOBNUMBER
 EOF
 done >> $JOBFILE
 }
