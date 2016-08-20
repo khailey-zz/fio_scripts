@@ -317,7 +317,7 @@ if [ x$FILENAME == x ] ; then
 fi
 
 
-mkdir $OUTPUT > /dev/null 2>&1
+mkdir -p $OUTPUT > /dev/null 2>&1
 if [ ! -d $OUTPUT ]; then 
   echo "directory $OUTPUT does not exist"
   exit
