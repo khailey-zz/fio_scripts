@@ -1,3 +1,24 @@
+new_xls.py
+===========
++ need install python module : xlsxwriter
++ the scripts can generate chart auto
++ sh fioparse.sh *.out > out ; python new_xls can get the excel "test.xlsx"
+
+test_all.sh
+===========
+	> all="1 2 4 8 16 32 64 128 256 512 1024"
+	> for i in $all; 
+	> do
+	>	echo $i;
+	>	sh fio.sh -r /dev/dm-12 -s 1000 -l $i -f -u 32 -p YES
+	> done
+	>   sh fioparse.sh *.out > out
+	>	python new_xls.py
+
++ you need modify devices name and set -s (runtime) -l (blocksize) -f (force) -u (numjobs) -p (preheat) and so on
+
+
+
 fio_scripts
 ===========
 
