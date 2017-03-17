@@ -59,27 +59,30 @@ varied.
 	OPTIONS:
 	   -h              Show this message
 	   -b  binary      name of fio binary, defaults to ./fio
-	   -d  directory   work directory where fio creates a file and reads and writes, 
-	                           default ./ (and default filename created is fiodata) 
-	   -o  directory   results directory, where to put output files, defaults to ./
-	   -t  tests       tests to run, defaults to readrand,read,write 
-	                           options are
-		                      readrand - IOPS test : 8k by 1,8,16,32 users
-		                      read  - MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
-	                      write - redo test, ie sync seq writes : 1k, 8k, 128k by 1 user
-	                      randrw   - workload test: 8k read and write by 1,8,16,32 users
+	   -w  directory   work directory where fio creates a fio and reads and writes, default /domain0/fiotest
+	   -o  directory   output directory, where to put output files, defaults to ./
+	   -t  tests       tests to run, defaults to all, options are
+	                      readrand - IOPS test : 8k by 1,8,16,32 users
+	                      read  - MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
+	                      write - redo test, ie sync seq writes : 1k, 4k, 8k, 128k, 1024k by 1 user
+	                      randrw   - workload test: 8k read write by 1,8,16,32 users
 	   -s  seconds     seconds to run each test for, default 60
-	   -m  megabytes   megabytes for the test I/O file to be used, default 8000 (ie 8G)
-	   -i              individual file per process, default size 100m (overrides -m )
+	   -m  megabytes   megabytes for the test I/O file to be used, default 65536 (ie 64G)
+	   -i              individual file per process, default size 100m (otherwise uses the -m size)
 	   -f              force run, ie don't ask for confirmation on options
 	   -c              force creation of work file otherwise if it exists we use it as is
-	   -r raw_device   use named raw device instead of file
-	   -u #users       force test to only use this many users
-	   -l blocksize    force test to only use this blocksize in KB, ie 1-1024 
+	   -u #users       test only use this many users
+	   -l blocksize    test only use this blocksize in KB, ie 1-1024
 	   -e recordsize   use this recordsize if/when creating the zfs file system, default 8K
+	   -d              Use DTrace on the run
+	   -x              remove work file after run
+	   -y              initialize raw devices to "-m megabytes" with writes
+	                   writes will be evenly written across multiple devices,  default is 64GB
+	   -z raw_sizes    size of each raw device. If multiple, colon separate, list inorder of raw_device
+	   -r raw_device   use raw device instead of file, multi devices colon separated
 	
 	       example
-	                  fio.sh -b ./fio.opensolaris
+	                  fio.sh ./fio.opensolaris /domain0/fiotest  -t rand_read -s 10 -m 1000 -f
 
 Running fioparse.sh
 ---------------------------
