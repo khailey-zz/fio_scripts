@@ -31,6 +31,7 @@ INITIALIZE=0
 REMOVE=0
 BINARY=`which fio`
 DIRECTORY="/domain0/fiotest"
+DIRECTORY=`pwd`/workdir
 OUTPUT="."
 TESTS="all"
 SECS="60"
@@ -96,12 +97,13 @@ OPTIONS:
    -r raw_device   use raw device instead of file, multi devices colon separated
                           
        example
-                  fio.sh ./fio.opensolaris /domain0/fiotest  -t rand_read -s 10 -m 1000 -f
+                  fio.sh ./fio.opensolaris /domain0/fiotest  -t randread -s 10 -m 1000 -f
 EOF
 }
 
-while getopts hz:ycb:nr:xe:d:o:it:s:l:u:m:f OPTION
+while getopts hz:ycb:nr:xe:d:w:o:it:s:l:u:m:f OPTION
 do
+     echo "ops $OPTION"
      case $OPTION in
          h)
              usage
@@ -112,6 +114,7 @@ do
              ;;
          w)
              DIRECTORY=$OPTARG
+		echo "DIRECTORY=$OPTARG"
              ;;
          o)
              OUTPUT=$OPTARG
@@ -781,3 +784,4 @@ if [ $REMOVE == 1 ]  && [ $RAW == 0 ] ; then  # {
 fi # }
 ./fioparse.sh  $OUTPUT/*out  > $OUTPUT/fio_summary.out 
 cat $OUTPUT/fio_summary.out
+
