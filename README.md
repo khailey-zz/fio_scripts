@@ -82,7 +82,7 @@ varied.
 	   -r raw_device   use raw device instead of file, multi devices colon separated
 	
 	       example
-	                  fio.sh ./fio.opensolaris /domain0/fiotest  -t rand_read -s 10 -m 1000 -f
+	                  fio.sh ./fio.opensolaris /domain0/fiotest  -t readrand -s 10 -m 1000 -f
 
 Running fioparse.sh
 ---------------------------
