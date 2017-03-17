@@ -34,7 +34,7 @@ files in this project
 
 NOTE: the scripts in this project require that you have already
 downloaded fio and compiled a binary of fio.
-The scripts also require version 2.0 of fio to work correctly.
+The scripts also require version 2.0.7 of fio to work correctly.
 
 Running fio.sh
 ---------------------------
