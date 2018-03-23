@@ -23,7 +23,7 @@ EOF
 # the perl looks at each commandline arge and sets a 
 # variable with that name = 1
 #
-AGRUMENTS=""
+ARGUMENTS=""
 VERBOSE=0
 DTRACE=0
 RPLOTS=0
@@ -53,9 +53,10 @@ do
              ARGUMENTS="$ARGUMENTS rplots percentiles"
              RPLOTS=1
              PERCENTILES=1
-             echo "please enter a test  name:"
-             read TESTNAME
-             export TESTNAME=${TESTNAME:-"noname"}
+             #echo "please enter a test  name:"
+             #read TESTNAME
+             #export TESTNAME=${TESTNAME:-"noname"}
+             export TESTNAME="noname"
              ;;
          p)
              ARGUMENTS="$ARGUMENTS percentiles"
@@ -555,13 +556,16 @@ sub print_hist {
             printf("%5s", $bs);
 #           foreach $type ( "read", "write" ) {
 #   $type = "read" ;
- 	    if ( $benchmark eq "write" ) {
- 		   $type="write" ;
- 		   $dtype="W" ;
- 	   } else {
- 		   $type="read" ;
- 		   $dtype="R" ;
- 	   }
+    if ( $benchmark eq "write" ) {
+        $type="write" ;
+        $dtype="W" ;
+    } elsif ( $benchmark eq "randwrite" ) {
+        $type="write" ;
+        $dtype="W" ;
+    } else {
+        $type="read" ;
+        $dtype="R" ;
+    }
                 if ( $iops{$type} > 0 ) { 
                      printf(" %-1.1s", $type);
                      printf("%9.3f", $throughput{$type}/1048576);
@@ -660,10 +664,13 @@ sub print_hist {
  	    if ( $benchmark eq "write" ) {
  		   $type="write" ;
  		   $dtype="W" ;
- 	   } else {
- 		   $type="read" ;
- 		   $dtype="R" ;
- 	   }
+ 	   } elsif ( $benchmark eq "randwrite" ) {
+            $type="write" ;
+            $dtype="W" ;
+        } else {
+            $type="read" ;
+            $dtype="R" ;
+        }
            if ( $outputrows > 0 ) {
               if ( $labels == 1 )  {
                  printf("m <- rbind(m,data.frame(");
