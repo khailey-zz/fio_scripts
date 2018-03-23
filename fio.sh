@@ -54,8 +54,8 @@ DTRACE=0
 DTRACE1=""
 DTRACE2=""
 
-MULTIUSERS="01 08 16 32 64"
-BSSIZES="0008 0128"
+MULTIUSERS="001 002 004 008 016 032 064 128 256 512"
+BSSIZES="0004 0008 0016 0032 0064 0128 0256 0512 1024 2048 4096"
 
 usage()
 {
@@ -699,6 +699,7 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
   elif [ $job ==  "readrand" ] ; then
+  # readrand: 8k by 1,8,16,32,64 users
        for USERS in `eval echo $MULTIUSERS` ; do 
          #echo "j: $USERS"
          PREFIX="$OUTPUT/${job}_u${USERS}_kb0008"
@@ -720,6 +721,7 @@ for job in $jobs; do # {
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
   elif [ $job ==  "writerand" ] ; then
+  # writerand: 8k by 1,8,16,32,64 users
        for USERS in `eval echo $MULTIUSERS` ; do 
          #echo "j: $USERS"
          PREFIX="$OUTPUT/${job}_u${USERS}_kb0008"
@@ -740,8 +742,8 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-  #  MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
   elif [ $job ==  "write" ] ; then
+  # write: 8k,64k,512k,1m,4m by 1 user
        for WRITESIZE in `eval echo $BSSIZES` ; do 
          PREFIX="$OUTPUT/${job}_u01_kb${WRITESIZE}"
          JOBFILE=${PREFIX}.job
@@ -753,22 +755,8 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-       for seq_write_size in $BSSIZES; do 
-         for USERS in `eval echo $MULTIUSERS` ; do 
-           #WRITESIZE=$SEQREADSIZE
-           WRITESIZE=$seq_write_size
-           #echo "j: $USERS"
-           PREFIX="$OUTPUT/${job}_u${USERS}_kb${seq_write_size}"
-           JOBFILE=${PREFIX}.job
-           init
-           offsets
-           cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
-           echo $cmd
-           [[ $EVAL -eq 1 ]] && eval $cmd
-         done
-       done
-  #  MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
   elif [ $job ==  "read" ] ; then
+  # read: 8k,64k,512k,1m,4m by 1 user
        for READSIZE in `eval echo $BSSIZES` ; do 
          PREFIX="$OUTPUT/${job}_u01_kb${READSIZE}"
          JOBFILE=${PREFIX}.job
@@ -780,22 +768,8 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-       for seq_read_size in $BSSIZES; do 
-         for USERS in `eval echo $MULTIUSERS` ; do 
-           #READSIZE=$SEQREADSIZE
-           READSIZE=$seq_read_size
-           #echo "j: $USERS"
-           PREFIX="$OUTPUT/${job}_u${USERS}_kb${seq_read_size}"
-           JOBFILE=${PREFIX}.job
-           init
-           offsets
-           cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
-           echo $cmd
-           [[ $EVAL -eq 1 ]] && eval $cmd
-         done
-       done
-  # workload test: 8k read write by 1,8,16,32 users
   elif [ $job ==  "randrw" ] ; then
+  # randrw: unsupported right now
     for USERS in `eval echo $MULTIUSERS` ; do 
       #echo "j: $USERS"
       PREFIX="$OUTPUT/${job}_u${USERS}"
