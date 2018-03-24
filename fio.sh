@@ -158,7 +158,6 @@ cat << EOF
 rw=randread
 bs=8k
 numjobs=1
-offset=$OFFSET
 EOF
 done >> $JOBFILE
 }
@@ -171,7 +170,6 @@ cat << EOF
 rw=randwrite
 bs=8k
 numjobs=1
-offset=$OFFSET
 EOF
 done >> $JOBFILE
 }
@@ -193,7 +191,6 @@ for job in $jobs; do # {
          # init creates the shared job file potion
          init
          # for random read, offsets shouldn't be needed
-         # offsets
          OFFSET=0
          loops=1
          NUSERS=`echo $USERS | sed -e 's/^00*//'`
@@ -215,7 +212,6 @@ for job in $jobs; do # {
          # init creates the shared job file potion
          init
          # for random write, offsets shouldn't be needed
-         # offsets
          OFFSET=0
          loops=1
          NUSERS=`echo $USERS | sed -e 's/^00*//'`
@@ -235,7 +231,6 @@ for job in $jobs; do # {
          JOBFILE=${PREFIX}.job
          init
          USERS=1
-         OFFSET=0
          eval $job
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
@@ -248,7 +243,6 @@ for job in $jobs; do # {
          JOBFILE=${PREFIX}.job
          init
          USERS=1
-         OFFSET=0
          eval $job
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd

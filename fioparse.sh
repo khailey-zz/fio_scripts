@@ -362,11 +362,14 @@ sub print_hist {
              $bs =~ s/-.*//;
              next;
         }
-        #Starting 1 process
+        #Starting N process/processes
+        # or 
+        #Starting N thread/threads
         if ( $line =~ m/Starting/ ) {
              $users=$line;
              $users =~ s/Starting //;
              $users =~ s/ process.*//;
+             $users =~ s/ thread.*//;
              next;
         }
         #     lat (usec): 4=97.56%, 10=1.10%, 20=0.09%, 50=0.03%, 100=0.01%
