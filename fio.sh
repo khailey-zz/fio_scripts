@@ -55,14 +55,7 @@ DTRACE1=""
 DTRACE2=""
 
 MULTIUSERS="01 08 16 32 64"
-READSIZES="0008 0032 0128"
-SEQREADSIZES="0128 1024"
-SEQREADSIZES="1024"
-
-WRITESIZES="0001 0004 0008 0016 0032 0064 0128"
-MULTIWRITEUSERS="01 02 04 08 16"
-WRITESIZES="0001 0008 0128"
-MULTIWRITEUSERS="01 04 16"
+BSSIZES="0008 0128"
 
 usage()
 {
@@ -284,7 +277,7 @@ offsets()
      fi
      while [[ $loops -le $NUSERS ]] ; do
             JOBNUMBER=$loops
-            # job is either write, read, randread, randrw and is
+            # job is either write, read, randread, randwrite and is
             # the name of a function that outputs job information to the job file
             eval $job
             loops=$(expr $loops + 1)
@@ -326,8 +319,7 @@ if [ -f /etc/delphix/version ]  ; then
    fi
 fi
 
-all="randrw read write readrand"
-all="readrand write read "
+all="readrand writerand write read"
 if [ $TESTS = "all" ] ; then
   jobs=$all
 else 
@@ -572,6 +564,7 @@ fi
 #    read
 #    write
 #    randread
+#    randwrite
 #    randrw
 # create the fio job files
 # init is always used to initialize the job file 
@@ -644,6 +637,19 @@ EOF
 done >> $JOBFILE
 }
 
+# write random, set blocksize, vary # of  users
+function writerand {
+for i in 1 ; do
+cat << EOF
+[job$JOBNUMBER]
+rw=randwrite
+bs=8k
+numjobs=1
+offset=$OFFSET
+EOF
+done >> $JOBFILE
+}
+
 # write sync, set 1 user, vary blocksizes
 function write {
 for i in 1 ; do
@@ -706,22 +712,56 @@ for job in $jobs; do # {
          NUSERS=`echo $USERS | sed -e 's/^00*//'`
          while [[ $loops -le $NUSERS ]] ; do
             JOBNUMBER=$loops
-            eval $jobs
+            eval $job
             loops=$(expr $loops + 1)
          done
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-  # redo test : 1k, 4k, 8k, 128k, 1024k by 1 user 
+  elif [ $job ==  "writerand" ] ; then
+       for USERS in `eval echo $MULTIUSERS` ; do 
+         #echo "j: $USERS"
+         PREFIX="$OUTPUT/${job}_u${USERS}_kb0008"
+         JOBFILE=${PREFIX}.job 
+         # init creates the shared job file potion
+         init
+         # for random write, offsets shouldn't be needed
+         # offsets
+         OFFSET=0
+         loops=1
+         NUSERS=`echo $USERS | sed -e 's/^00*//'`
+         while [[ $loops -le $NUSERS ]] ; do
+            JOBNUMBER=$loops
+            eval $job
+            loops=$(expr $loops + 1)
+         done
+         cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
+         echo $cmd
+         [[ $EVAL -eq 1 ]] && eval $cmd
+       done
+  #  MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
   elif [ $job ==  "write" ] ; then
-       for WRITESIZE in `eval echo $WRITESIZES` ; do 
-         for USERS in `eval echo $MULTIWRITEUSERS` ; do 
-           PREFIX="$OUTPUT/${job}_u${USERS}_kb${WRITESIZE}"
+       for WRITESIZE in `eval echo $BSSIZES` ; do 
+         PREFIX="$OUTPUT/${job}_u01_kb${WRITESIZE}"
+         JOBFILE=${PREFIX}.job
+         init
+         USERS=1
+         OFFSET=0
+         eval $job
+         cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
+         echo $cmd
+         [[ $EVAL -eq 1 ]] && eval $cmd
+       done
+       for seq_write_size in $BSSIZES; do 
+         for USERS in `eval echo $MULTIUSERS` ; do 
+           #WRITESIZE=$SEQREADSIZE
+           WRITESIZE=$seq_write_size
+           #echo "j: $USERS"
+           PREFIX="$OUTPUT/${job}_u${USERS}_kb${seq_write_size}"
            JOBFILE=${PREFIX}.job
            init
            offsets
-           # eval $job
            cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
            echo $cmd
            [[ $EVAL -eq 1 ]] && eval $cmd
@@ -729,7 +769,7 @@ for job in $jobs; do # {
        done
   #  MB/s test : 1M by 1,8,16,32 users & 8k,32k,128k,1m by 1 user
   elif [ $job ==  "read" ] ; then
-       for READSIZE in `eval echo $READSIZES` ; do 
+       for READSIZE in `eval echo $BSSIZES` ; do 
          PREFIX="$OUTPUT/${job}_u01_kb${READSIZE}"
          JOBFILE=${PREFIX}.job
          init
@@ -740,7 +780,7 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-       for seq_read_size in $SEQREADSIZES; do 
+       for seq_read_size in $BSSIZES; do 
          for USERS in `eval echo $MULTIUSERS` ; do 
            #READSIZE=$SEQREADSIZE
            READSIZE=$seq_read_size
@@ -757,7 +797,7 @@ for job in $jobs; do # {
   # workload test: 8k read write by 1,8,16,32 users
   elif [ $job ==  "randrw" ] ; then
     for USERS in `eval echo $MULTIUSERS` ; do 
-      echo "j: $USERS"
+      #echo "j: $USERS"
       PREFIX="$OUTPUT/${job}_u${USERS}"
       JOBFILE=${PREFIX}.job
       init
