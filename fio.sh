@@ -9,10 +9,8 @@ DD=dd
 OUTPUT=`pwd`/output
 TESTS="read write randread randwrite"
 DIRECT=0
-#MULTIUSERS="001 002 004 008 016 032 064 128 256 512"
-#BSSIZES="0004 0008 0016 0032 0064 0128 0256 0512 1024 2048 4096"
-MULTIUSERS="001 002"
-BSSIZES="0004 0008"
+MULTIUSERS="001 002 004 008 016 032 064 128 256 512"
+BSSIZES="0004 0008 0016 0032 0064 0128 0256 0512 1024 2048 4096"
 SECS="60"
 FILENAME="/dev/null"
 MEGABYTES="1024"
@@ -38,7 +36,7 @@ OPTIONS:
    -s  seconds     seconds to run each test for, default 60
    -d  direct      If 1, use non-buffered I/O (usually O_DIRECT).  Default: 0.
        example
-                  fio.sh -t "randread" -f /dev/null -m 2018 -s 60 -d
+                  ./fio.sh -t "read randread" -f /dev/sda1 -m 1024 -d -o mytest
 EOF
 }
 
@@ -118,7 +116,8 @@ direct=$DIRECT
 runtime=$SECS
 thread=1
 group_reporting=1
-ioengine=sync
+ioengine=posixaio
+iodepth=64
 fadvise_hint=1
 randrepeat=1
 end_fsync=0
