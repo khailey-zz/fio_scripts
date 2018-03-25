@@ -621,8 +621,7 @@ graphitg <- function(i_name) {
         file <- paste(dir,file,".png",sep="")
         cat("file=",file,"\n")
         png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
-        #graphit(m, i_name=testname, i_bs="8K",i_title=paste(testtype,testname,"bs=8K"),i_hist=hist,i_poly=poly)
-        graphit(m, i_name=testname, i_bs="8K",i_title=paste("randwrite",testname,"bs=8K"),i_hist=hist,i_poly=poly)
+        graphit(m, i_name=testname, i_bs="8K",i_title=paste(testtype,testname,"bs=8K"),i_hist=hist,i_poly=poly)
         dev.off()
     }
     if ( i_name == "randread" ) {
@@ -632,8 +631,7 @@ graphitg <- function(i_name) {
         file <- paste(dir,file,".png",sep="")
         cat("file=",file,"\n")
         png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
-        #graphit(m, i_name=testname, i_bs="8K",i_title=paste(testtype,testname,"bs=8K"),i_hist=hist,i_poly=poly)
-        graphit(m, i_name=testname, i_bs="8K",i_title=paste("randread",testname,"bs=8K"),i_hist=hist,i_poly=poly)
+        graphit(m, i_name=testname, i_bs="8K",i_title=paste(testtype,testname,"bs=8K"),i_hist=hist,i_poly=poly)
         dev.off()
     }
     if ( i_name == "write" ) {
