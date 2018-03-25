@@ -117,7 +117,6 @@ runtime=$SECS
 thread=1
 group_reporting=1
 ioengine=posixaio
-iodepth=1
 fadvise_hint=1
 randrepeat=1
 end_fsync=0
@@ -131,6 +130,7 @@ for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
 rw=read
+iodepth=64
 bs=${READSIZE}k
 numjobs=1
 EOF
@@ -143,6 +143,7 @@ for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
 rw=write
+iodepth=64
 bs=${WRITESIZE}k
 numjobs=1
 EOF
@@ -155,6 +156,7 @@ for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
 rw=randread
+iodepth=1
 bs=8k
 numjobs=1
 EOF
@@ -167,6 +169,7 @@ for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
 rw=randwrite
+iodepth=1
 bs=8k
 numjobs=1
 EOF
