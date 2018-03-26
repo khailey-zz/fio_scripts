@@ -29,7 +29,7 @@ OPTIONS:
    -m  megabytes   megabytes for the test I/O file to be used, default 1024 (ie 1G)
    -o  directory   output directory, where to put output files, defaults to ./output
    -t  tests       tests to run, defaults to "read write randread randwrite", options are
-                      read  - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
+                      read - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
                       write - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
                       randread - multi-user test ie : 8k randread by 1,4,16,64,256 users
                       randwrite - multi-user test ie : 8k randwrite by 1,4,16,64,256 users
