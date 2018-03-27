@@ -610,7 +610,7 @@ graphit <- function(
 }
 
 graphitg <- function(i_name) {
-    #rdir <- ""
+    rdir <- paste(rdir,i_name,sep="")
     poly=1
     hist=1
     ppi <- 300
@@ -645,7 +645,7 @@ graphitg <- function(i_name) {
         #    graphit(m, i_name=testname, i_bs=bs,i_title=paste(testtype,testname,"bs=",bs),i_hist=hist,i_poly=poly)
         #    dev.off()
         #}
-        for (users in c(1) ){
+        for (users in c(4) ){
             file <- paste(testtype,testname,"users",users,sep="_")
             file <- paste(rdir,file,".png",sep="")
             cat("file=",file,"\n")

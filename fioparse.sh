@@ -5,7 +5,6 @@ ARGUMENTS=""
 RPLOTS=0
 PERCENTILES=0
 FORMAT="csv"
-RDIR=""
 
 usage()
 {
@@ -34,7 +33,7 @@ do
              exit 1
              ;;
          d)
-             RDIR=$OPTARG
+             export RDIR=$OPTARG
              ;;
          f)
              FORMAT=$OPTARG
@@ -668,7 +667,7 @@ sub print_hist {
             printf("colnames(m)=colnames\n");
             printf("m <- data.frame(m)\n");
             printf("testtype <- \"%s\"\n",$testname);
-            printf("rdir <- \"%s\"\n",$RDIR);
+            printf("rdir <- \"%s\"\n",$ENV{'RDIR'});
         }
         #printf("name <- \"%s\" \n", $dir );
         #printf("if ( exists(\"total\") ) { \n");
