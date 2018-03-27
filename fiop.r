@@ -100,13 +100,13 @@ graphit <- function(
       if ( i_name == "randread" ) {
          rr <- subset(rr,rr['name'] == "randread" )
          i_scalex = "users"
-         i_bs = "8K"
+         i_bs = "4K"
          maxMBs = 100
       }
       if ( i_name == "randwrite" ) {
          rr <- subset(rr,rr['name'] == "randwrite" )
          i_scalex = "users"
-         i_bs = "8K"
+         i_bs = "4K"
          maxMBs = 100
       }
       if ( i_name == "read" ) {
@@ -617,21 +617,21 @@ graphitg <- function(i_name) {
     if ( i_name == "randwrite" ) {
         testname="randwrite"
         
-        file <- paste(testtype,testname,"bs_8K",sep="_")
+        file <- paste(testtype,testname,"bs_4K",sep="_")
         file <- paste(dir,file,".png",sep="")
         cat("file=",file,"\n")
         png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
-        graphit(m, i_name=testname, i_bs="8K",i_title=paste(testtype,testname,"bs=8K"),i_hist=hist,i_poly=poly)
+        graphit(m, i_name=testname, i_bs="4K",i_title=paste(testtype,testname,"bs=4K"),i_hist=hist,i_poly=poly)
         dev.off()
     }
     if ( i_name == "randread" ) {
         testname="randread"
         
-        file <- paste(testtype,testname,"bs_8K",sep="_")
+        file <- paste(testtype,testname,"bs_4K",sep="_")
         file <- paste(dir,file,".png",sep="")
         cat("file=",file,"\n")
         png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
-        graphit(m, i_name=testname, i_bs="8K",i_title=paste(testtype,testname,"bs=8K"),i_hist=hist,i_poly=poly)
+        graphit(m, i_name=testname, i_bs="4K",i_title=paste(testtype,testname,"bs=4K"),i_hist=hist,i_poly=poly)
         dev.off()
     }
     if ( i_name == "write" ) {

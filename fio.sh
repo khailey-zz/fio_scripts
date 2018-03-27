@@ -9,8 +9,12 @@ DD=dd
 OUTPUT=`pwd`/output
 TESTS="read write randread randwrite"
 DIRECT=0
-MULTIUSERS="001 002 004 008 016 032 064 128 256 512"
-BSSIZES="0004 0008 0016 0032 0064 0128 0256 0512 1024 2048 4096"
+TESTNAME="Unknown-device"
+#for random read/write
+MULTIUSERS="001 002 004 008"
+
+IOENGINE="posixaio"
+BSSIZES="0128 0256 0512 1024 2048 4096"
 SECS="60"
 FILENAME="/dev/null"
 MEGABYTES="1024"
@@ -24,6 +28,7 @@ run a set of I/O benchmarks
 
 OPTIONS:
    -h              Show this message
+   -n              testname, such as device or file system type
    -b  binary      name of fio binary, defaults to fio
    -f  filename    fio normally makes up a file name based on the job name, thread number, and file number.
    -m  megabytes   megabytes for the test I/O file to be used, default 1024 (ie 1G)
@@ -31,8 +36,8 @@ OPTIONS:
    -t  tests       tests to run, defaults to "read write randread randwrite", options are
                       read - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
                       write - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
-                      randread - multi-user test ie : 8k randread by 1,4,16,64,256 users
-                      randwrite - multi-user test ie : 8k randwrite by 1,4,16,64,256 users
+                      randread - multi-user test ie : 4k randread by 1,2,4,8 users
+                      randwrite - multi-user test ie : 4k randwrite by by 1,2,4,8 users
    -s  seconds     seconds to run each test for, default 60
    -d  direct      If 1, use non-buffered I/O (usually O_DIRECT).  Default: 0.
        example
@@ -40,12 +45,15 @@ OPTIONS:
 EOF
 }
 
-while getopts hyb:nf:o:t:s:dm: OPTION
+while getopts hyb:n:f:o:t:s:dm: OPTION
 do
      case $OPTION in
          h)
              usage
              exit 1
+             ;;
+         n)
+             TESTNAME=$OPTARG
              ;;
          b)
              BINARY=$OPTARG
@@ -116,7 +124,7 @@ direct=$DIRECT
 runtime=$SECS
 thread=1
 group_reporting=1
-ioengine=posixaio
+ioengine=$IOENGINE
 fadvise_hint=1
 randrepeat=1
 end_fsync=0
@@ -129,6 +137,7 @@ function read {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
+name=$TESTNAME
 rw=read
 iodepth=64
 bs=${READSIZE}k
@@ -142,6 +151,7 @@ function write {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
+name=$job
 rw=write
 iodepth=64
 bs=${WRITESIZE}k
@@ -155,9 +165,10 @@ function randread {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
+name=$job
 rw=randread
-iodepth=1
-bs=8k
+iodepth=$USERS
+bs=4k
 numjobs=1
 EOF
 done >> $JOBFILE
@@ -168,9 +179,10 @@ function randwrite {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
+name=$job
 rw=randwrite
-iodepth=1
-bs=8k
+iodepth=$USERS
+bs=4k
 numjobs=1
 EOF
 done >> $JOBFILE
@@ -185,48 +197,55 @@ for job in $jobs; do # {
   READSIZE=008
 
   if [ $job ==  "randread" ] ; then
-  # randread: 8k by 1,8,16,32,64 users
+  # randread: 4k by 1,2,4,8 users
        for USERS in `eval echo $MULTIUSERS` ; do 
-         #echo "j: $USERS"
-         PREFIX="$OUTPUT/${job}_u${USERS}_kb0008"
+         PREFIX="$OUTPUT/${job}_u${USERS}_kb0004"
          JOBFILE=${PREFIX}.job
          # init creates the shared job file potion
          init
          # for random read, offsets shouldn't be needed
          OFFSET=0
-         loops=1
-         NUSERS=`echo $USERS | sed -e 's/^00*//'`
-         while [[ $loops -le $NUSERS ]] ; do
-            JOBNUMBER=$loops
+         if [ $IOENGINE == "sync" -o $IOENGINE == "psync" ] ; then
+             loops=1
+             NUSERS=`echo $USERS | sed -e 's/^00*//'`
+             while [[ $loops -le $NUSERS ]] ; do
+                JOBNUMBER=$loops
+                eval $job
+                loops=$(expr $loops + 1)
+             done
+         else #aio
             eval $job
-            loops=$(expr $loops + 1)
-         done
+         fi
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-  elif [ $job ==  "randwrite" ] ; then
-  # randwrite: 8k by 1,8,16,32,64 users
+  elif [ $job == "randwrite" ] ; then
+  # randwrite: 4k by 1,2,4,8 users
        for USERS in `eval echo $MULTIUSERS` ; do 
          #echo "j: $USERS"
-         PREFIX="$OUTPUT/${job}_u${USERS}_kb0008"
+         PREFIX="$OUTPUT/${job}_u${USERS}_kb0004"
          JOBFILE=${PREFIX}.job 
          # init creates the shared job file potion
          init
          # for random write, offsets shouldn't be needed
          OFFSET=0
-         loops=1
-         NUSERS=`echo $USERS | sed -e 's/^00*//'`
-         while [[ $loops -le $NUSERS ]] ; do
-            JOBNUMBER=$loops
+         if [ $IOENGINE == "sync" -o $IOENGINE == "psync" ] ; then
+            loops=1
+            NUSERS=`echo $USERS | sed -e 's/^00*//'`
+            while [[ $loops -le $NUSERS ]] ; do
+                JOBNUMBER=$loops
+                eval $job
+                loops=$(expr $loops + 1)
+            done
+         else #aio
             eval $job
-            loops=$(expr $loops + 1)
-         done
+         fi
          cmd="$DTRACE1 $BINARY $JOBFILE $DTRACE2> ${PREFIX}.out"
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-  elif [ $job ==  "write" ] ; then
+  elif [ $job == "write" ] ; then
   # write: 8k,64k,512k,1m,4m by 1 user
        for WRITESIZE in `eval echo $BSSIZES` ; do 
          PREFIX="$OUTPUT/${job}_u01_kb${WRITESIZE}"
@@ -238,7 +257,7 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-  elif [ $job ==  "read" ] ; then
+  elif [ $job == "read" ] ; then
   # read: 8k,64k,512k,1m,4m by 1 user
        for READSIZE in `eval echo $BSSIZES` ; do 
          PREFIX="$OUTPUT/${job}_u01_kb${READSIZE}"
