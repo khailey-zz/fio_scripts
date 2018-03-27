@@ -6,7 +6,7 @@ EVAL=1
 #Optional parameters and default value
 BINARY="/usr/bin/fio"
 DD=dd
-OUTPUT=`pwd`/output/
+OUTPUT=`pwd`/output
 TESTNAME="Unknown"
 TESTS="read write randread randwrite"
 DIRECT=0

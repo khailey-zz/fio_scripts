@@ -613,7 +613,7 @@ graphitg <- function(i_name) {
     poly=1
     hist=1
     ppi <- 300
-    rdir <- paste(rdir,i_name,sep="")
+    rdir <- paste(rdir,i_name,"",sep="/")
     dir.create(rdir,FALSE)
     if ( i_name == "randwrite" ) {
         testname="randwrite"
