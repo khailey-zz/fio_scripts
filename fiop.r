@@ -43,8 +43,8 @@ graphit <- function(
                     m,i_name="undefined",i_users=0,i_bs="undefined", i_title="default title",i_hist=1,i_poly=1,
                     i_plot_avg  = 1 ,
                     i_plot_max  = 1 ,
-                    i_plot_95   = 1 ,
-                    i_plot_99   = 1 ,
+                    i_plot_95   = 0 ,
+                    i_plot_99   = 0 ,
                     i_plot_9999 = 0 ,
                     i_scalelat  = "avg" ,
                     i_plots = 3
@@ -75,9 +75,9 @@ graphit <- function(
   #
   #   example
   #
-       rr <- m ;
-       rr <- subset(rr,rr['bs'] == "8K" )
-       rr <- subset(rr,rr['name'] == "randread" )
+  #     rr <- m ;
+  #     rr <- subset(rr,rr['bs'] == "4K" )
+  #     rr <- subset(rr,rr['name'] == "randread" )
 
   #
   # rr will be the subset of m that is graphed
@@ -665,7 +665,7 @@ graphitg <- function(i_name) {
         #    graphit(m, i_name=testname, i_bs=bs,i_title=paste(testtype,testname,"bs=",bs),i_hist=hist,i_poly=poly)
         #    dev.off()
         #}
-        for (users in c(1) ){
+        for (users in c(4) ){
             file <- paste(testtype,testname,"users",users,sep="_")
             file <- paste(dir,file,".png",sep="")
             cat("file=",file,"\n")
