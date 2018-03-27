@@ -238,13 +238,17 @@ sub print_hist {
              #print "dir=$dir;\n"
         }
         if ( $line =~ m/ioengine/ ) {
-             $testname=$bs=$benchmark=$line;
+             $ioengine=$iodepth=$testname=$bs=$benchmark=$line;
              $testname =~ s/:.*//;
              $benchmark =~ s/.* rw=//;
              $benchmark =~ s/,.*//;
              $bs =~ s/.* bs=//;
              $bs =~ s/-.*//;
-             #printf("testname: %s benchmark:%s bs:%s\n",$testname, $benchmark, $bs );
+             $ioengine =~ s/.* ioengine=//;
+             $ioengine =~ s/,.*//;
+             $iodepth =~ s/.* iodepth=//;
+             #printf("testname:%s  benchmark:%s  bs:%s\n",$testname, $benchmark, $bs);
+             #printf("ioengine:%s  iodepth:%s\n",$ioengine, $iodepth);
              next;
         }
         #    READ: io=48216KB, aggrb=802KB/s, minb=822KB/s, maxb=822KB/s, mint=60052msec, maxt=60052msec
@@ -330,6 +334,7 @@ sub print_hist {
              $users =~ s/Starting //;
              $users =~ s/ process.*//;
              $users =~ s/ thread.*//;
+             $users = $users*$iodepth;
              next;
         }
         #     lat (usec): 4=97.56%, 10=1.10%, 20=0.09%, 50=0.03%, 100=0.01%

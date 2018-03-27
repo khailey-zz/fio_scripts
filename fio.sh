@@ -6,10 +6,9 @@ EVAL=1
 #Optional parameters and default value
 BINARY="/usr/bin/fio"
 DD=dd
-OUTPUT=`pwd`/output
+OUTPUT="Unknown"
 TESTS="read write randread randwrite"
 DIRECT=0
-TESTNAME="Unknown-device"
 #for random read/write
 MULTIUSERS="001 002 004 008"
 
@@ -28,11 +27,11 @@ run a set of I/O benchmarks
 
 OPTIONS:
    -h              Show this message
-   -n              testname, such as device or file system type
    -b  binary      name of fio binary, defaults to fio
    -f  filename    fio normally makes up a file name based on the job name, thread number, and file number.
    -m  megabytes   megabytes for the test I/O file to be used, default 1024 (ie 1G)
-   -o  directory   output directory, where to put output files, defaults to ./output
+   -o  directory   output directory name, where to put output files, defaults to ./Unknown
+                   such as device or file system type
    -t  tests       tests to run, defaults to "read write randread randwrite", options are
                       read - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
                       write - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
@@ -45,15 +44,12 @@ OPTIONS:
 EOF
 }
 
-while getopts hyb:n:f:o:t:s:dm: OPTION
+while getopts hyb:f:o:t:s:dm: OPTION
 do
      case $OPTION in
          h)
              usage
              exit 1
-             ;;
-         n)
-             TESTNAME=$OPTARG
              ;;
          b)
              BINARY=$OPTARG
@@ -137,9 +133,9 @@ function read {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$TESTNAME
+name=$OUTPUT
 rw=read
-iodepth=64
+iodepth=4
 bs=${READSIZE}k
 numjobs=1
 EOF
@@ -151,9 +147,9 @@ function write {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$TESTNAME
+name=$OUTPUT
 rw=write
-iodepth=64
+iodepth=4
 bs=${WRITESIZE}k
 numjobs=1
 EOF
@@ -165,7 +161,7 @@ function randread {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$TESTNAME
+name=$OUTPUT
 rw=randread
 iodepth=$USERS
 bs=4k
@@ -179,7 +175,7 @@ function randwrite {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$TESTNAME
+name=$OUTPUT
 rw=randwrite
 iodepth=$USERS
 bs=4k
@@ -280,6 +276,6 @@ for job in $jobs; do # {
   fi
 done  # }
 
-./fioparse.sh -f rplots $OUTPUT/*.out  > $OUTPUT/${TESTNAME}.r
-./fioparse.sh -f csv $OUTPUT/*.out  > $OUTPUT/${TESTNAME}.csv
-cat $OUTPUT/${TESTNAME}.csv
+./fioparse.sh -f rplots $OUTPUT/*.out  > $OUTPUT/${OUTPUT}.r
+./fioparse.sh -f csv $OUTPUT/*.out  > $OUTPUT/${OUTPUT}.csv
+cat $OUTPUT/${OUTPUT}.csv
