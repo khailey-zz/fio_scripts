@@ -610,7 +610,7 @@ graphit <- function(
 }
 
 graphitg <- function(i_name) {
-    dir <- "ruijie_"
+    #rdir <- ""
     poly=1
     hist=1
     ppi <- 300
@@ -618,7 +618,7 @@ graphitg <- function(i_name) {
         testname="randwrite"
         
         file <- paste(testtype,testname,"bs_4K",sep="_")
-        file <- paste(dir,file,".png",sep="")
+        file <- paste(rdir,file,".png",sep="")
         cat("file=",file,"\n")
         png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
         graphit(m, i_name=testname, i_bs="4K",i_title=paste(testtype,testname,"bs=4K"),i_hist=hist,i_poly=poly)
@@ -628,7 +628,7 @@ graphitg <- function(i_name) {
         testname="randread"
         
         file <- paste(testtype,testname,"bs_4K",sep="_")
-        file <- paste(dir,file,".png",sep="")
+        file <- paste(rdir,file,".png",sep="")
         cat("file=",file,"\n")
         png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
         graphit(m, i_name=testname, i_bs="4K",i_title=paste(testtype,testname,"bs=4K"),i_hist=hist,i_poly=poly)
@@ -639,7 +639,7 @@ graphitg <- function(i_name) {
         
         #for (bs in c("8K","128K") ){
         #    file <- paste(testtype,testname,"bs",bs,sep="_")
-        #    file <- paste(dir,file,".png",sep="")
+        #    file <- paste(rdir,file,".png",sep="")
         #    cat("file=",file,"\n")
         #    png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
         #    graphit(m, i_name=testname, i_bs=bs,i_title=paste(testtype,testname,"bs=",bs),i_hist=hist,i_poly=poly)
@@ -647,7 +647,7 @@ graphitg <- function(i_name) {
         #}
         for (users in c(1) ){
             file <- paste(testtype,testname,"users",users,sep="_")
-            file <- paste(dir,file,".png",sep="")
+            file <- paste(rdir,file,".png",sep="")
             cat("file=",file,"\n")
             png(filename=file)
             graphit(m, i_name=testname, i_users=users,i_title=paste(testtype,testname,"users=",users),i_hist=hist,i_poly=poly)
@@ -659,7 +659,7 @@ graphitg <- function(i_name) {
         
         #for (bs in c("8K","128K") ){
         #    file <- paste(testtype,testname,"bs",bs,sep="_")
-        #    file <- paste(dir,file,".png",sep="")
+        #    file <- paste(rdir,file,".png",sep="")
         #    cat("file=",file,"\n")
         #    png(filename=file, width=6*ppi, height=6*ppi, res=ppi )
         #    graphit(m, i_name=testname, i_bs=bs,i_title=paste(testtype,testname,"bs=",bs),i_hist=hist,i_poly=poly)
@@ -667,7 +667,7 @@ graphitg <- function(i_name) {
         #}
         for (users in c(4) ){
             file <- paste(testtype,testname,"users",users,sep="_")
-            file <- paste(dir,file,".png",sep="")
+            file <- paste(rdir,file,".png",sep="")
             cat("file=",file,"\n")
             png(filename=file)
             graphit(m, i_name=testname, i_users=users,i_title=paste(testtype,testname,"users=",users),i_hist=hist,i_poly=poly)

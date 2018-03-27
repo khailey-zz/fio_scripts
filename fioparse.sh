@@ -5,6 +5,7 @@ ARGUMENTS=""
 RPLOTS=0
 PERCENTILES=0
 FORMAT="csv"
+RDIR=""
 
 usage()
 {
@@ -15,6 +16,7 @@ collects I/O information and displays them
 
 OPTIONS:
    -h              Show this message
+   -d              Set R generated image storage directory
    -f              output format, defaults to csv, options are
                    csv - csv format(include histograms)
                    rplots - r format (includes histograms and percentiles)
@@ -24,12 +26,15 @@ OPTIONS:
 EOF
 }
 
-while getopts .hpf:. OPTION
+while getopts .hd:pf:. OPTION
 do
      case $OPTION in
          h)
              usage
              exit 1
+             ;;
+         d)
+             RDIR=$OPTARG
              ;;
          f)
              FORMAT=$OPTARG
@@ -663,6 +668,7 @@ sub print_hist {
             printf("colnames(m)=colnames\n");
             printf("m <- data.frame(m)\n");
             printf("testtype <- \"%s\"\n",$testname);
+            printf("rdir <- \"%s\"\n",$RDIR);
         }
         #printf("name <- \"%s\" \n", $dir );
         #printf("if ( exists(\"total\") ) { \n");

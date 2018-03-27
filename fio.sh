@@ -6,7 +6,7 @@ EVAL=1
 #Optional parameters and default value
 BINARY="/usr/bin/fio"
 DD=dd
-OUTPUT=`pwd`/output
+OUTPUT=`pwd`/output/
 TESTNAME="Unknown"
 TESTS="read write randread randwrite"
 DIRECT=0
@@ -280,6 +280,6 @@ for job in $jobs; do # {
   fi
 done  # }
 
-./fioparse.sh -f rplots $OUTPUT/*.out  > $RPLOTS/${TESTNAME}.r
+./fioparse.sh -f rplots -d $OUTPUT $OUTPUT/*.out  > $RPLOTS/${TESTNAME}.r
 ./fioparse.sh -f csv $OUTPUT/*.out  > $CSV/${TESTNAME}.csv
 cat $CSV/${TESTNAME}.csv
