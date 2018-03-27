@@ -151,7 +151,7 @@ function write {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$job
+name=$TESTNAME
 rw=write
 iodepth=64
 bs=${WRITESIZE}k
@@ -165,7 +165,7 @@ function randread {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$job
+name=$TESTNAME
 rw=randread
 iodepth=$USERS
 bs=4k
@@ -179,7 +179,7 @@ function randwrite {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$job
+name=$TESTNAME
 rw=randwrite
 iodepth=$USERS
 bs=4k
