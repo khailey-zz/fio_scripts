@@ -280,6 +280,6 @@ for job in $jobs; do # {
   fi
 done  # }
 
-./fioparse.sh  $OUTPUT/*out  > $OUTPUT/fio_summary.out 
-cat $OUTPUT/fio_summary.out
-
+./fioparse.sh -f rplots $OUTPUT/*.out  > $OUTPUT/${TESTNAME}.r
+./fioparse.sh -f csv $OUTPUT/*.out  > $OUTPUT/${TESTNAME}.csv
+cat $OUTPUT/${TESTNAME}.csv
