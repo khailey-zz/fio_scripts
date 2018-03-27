@@ -283,3 +283,5 @@ done  # }
 ./fioparse.sh -f rplots -d $OUTPUT $OUTPUT/*.out  > $RPLOTS/${TESTNAME}.r
 ./fioparse.sh -f csv $OUTPUT/*.out  > $CSV/${TESTNAME}.csv
 cat $CSV/${TESTNAME}.csv
+#Generate visual IO performance pictures
+Rscript `pwd`/fiop.r $RPLOTS/${TESTNAME}.r

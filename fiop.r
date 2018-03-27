@@ -610,10 +610,11 @@ graphit <- function(
 }
 
 graphitg <- function(i_name) {
-    rdir <- paste(rdir,i_name,sep="")
     poly=1
     hist=1
     ppi <- 300
+    rdir <- paste(rdir,i_name,sep="")
+    dir.create(rdir,FALSE)
     if ( i_name == "randwrite" ) {
         testname="randwrite"
         
@@ -682,3 +683,6 @@ analysisall <- function() {
     graphitg("randread")
     graphitg("randwrite")
 }
+args<-commandArgs(T)
+source(args[1])
+analysisall()
