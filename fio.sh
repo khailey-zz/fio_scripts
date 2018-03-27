@@ -6,7 +6,8 @@ EVAL=1
 #Optional parameters and default value
 BINARY="/usr/bin/fio"
 DD=dd
-OUTPUT="Unknown"
+OUTPUT=`pwd`/output
+TESTNAME="Unknown"
 TESTS="read write randread randwrite"
 DIRECT=0
 #for random read/write
@@ -27,11 +28,11 @@ run a set of I/O benchmarks
 
 OPTIONS:
    -h              Show this message
-   -b  binary      name of fio binary, defaults to fio
+   -n              testname, such as device or file system type, default: Unknown
+   -b  binary      name of fio binary, defaults to fio, only support version 2.0.7
    -f  filename    fio normally makes up a file name based on the job name, thread number, and file number.
    -m  megabytes   megabytes for the test I/O file to be used, default 1024 (ie 1G)
-   -o  directory   output directory name, where to put output files, defaults to ./Unknown
-                   such as device or file system type
+   -o  directory   output directory name, where to put output files, defaults to ./output
    -t  tests       tests to run, defaults to "read write randread randwrite", options are
                       read - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
                       write - block-size test ie : 4k,16k,64k,256k,1m,4m by 1 user
@@ -44,12 +45,15 @@ OPTIONS:
 EOF
 }
 
-while getopts hyb:f:o:t:s:dm: OPTION
+while getopts hn:yb:f:o:t:s:dm: OPTION
 do
      case $OPTION in
          h)
              usage
              exit 1
+             ;;
+         n)
+             TESTNAME=$OPTARG
              ;;
          b)
              BINARY=$OPTARG
@@ -79,8 +83,9 @@ do
      esac
 done
 
-
-mkdir $OUTPUT > /dev/null 2>&1
+RPLOTS="$OUTPUT/RPLOTS/"
+CSV="$OUTPUT/CSV/"
+mkdir -p $RPLOTS $CSV
 if [ ! -d $OUTPUT ]; then 
   echo "directory $OUTPUT does not exist"
   exit
@@ -89,6 +94,7 @@ fi
 jobs=$TESTS
 echo "configuration: "
 echo "    binary=$BINARY"
+echo "    testname=$TESTNAME"
 echo "    output directory=$OUTPUT"
 echo "    filename=$FILENAME"
 echo "    megabytes=$MEGABYTES"
@@ -121,9 +127,7 @@ runtime=$SECS
 thread=1
 group_reporting=1
 ioengine=$IOENGINE
-fadvise_hint=1
-randrepeat=1
-end_fsync=0
+end_fsync=1
 EOF
 done > $JOBFILE
 }
@@ -133,7 +137,7 @@ function read {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$OUTPUT
+name=$TESTNAME
 rw=read
 iodepth=4
 bs=${READSIZE}k
@@ -147,7 +151,7 @@ function write {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$OUTPUT
+name=$TESTNAME
 rw=write
 iodepth=4
 bs=${WRITESIZE}k
@@ -161,7 +165,7 @@ function randread {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$OUTPUT
+name=$TESTNAME
 rw=randread
 iodepth=$USERS
 bs=4k
@@ -175,7 +179,7 @@ function randwrite {
 for i in 1 ; do
 cat << EOF
 [job$JOBNUMBER]
-name=$OUTPUT
+name=$TESTNAME
 rw=randwrite
 iodepth=$USERS
 bs=4k
@@ -276,6 +280,6 @@ for job in $jobs; do # {
   fi
 done  # }
 
-./fioparse.sh -f rplots $OUTPUT/*.out  > $OUTPUT/${OUTPUT}.r
-./fioparse.sh -f csv $OUTPUT/*.out  > $OUTPUT/${OUTPUT}.csv
-cat $OUTPUT/${OUTPUT}.csv
+./fioparse.sh -f rplots $OUTPUT/*.out  > $RPLOTS/${TESTNAME}.r
+./fioparse.sh -f csv $OUTPUT/*.out  > $CSV/${TESTNAME}.csv
+cat $CSV/${TESTNAME}.csv
