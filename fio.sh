@@ -125,6 +125,7 @@ filesize=${MEGABYTES}m
 direct=$DIRECT
 runtime=$SECS
 thread=1
+ioscheduler=noop
 group_reporting=1
 ioengine=$IOENGINE
 end_fsync=1
