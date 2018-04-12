@@ -4,7 +4,7 @@
 EVAL=1
 
 #Optional parameters and default value
-BINARY="/usr/bin/fio"
+BINARY="fio"
 DD=dd
 OUTPUT=`pwd`/output
 TESTNAME="Unknown"
@@ -27,9 +27,10 @@ usage: $0  [options]
 run a set of I/O benchmarks
 
 OPTIONS:
-   -h              Show this message
-   -n              testname, such as device or file system type, default: Unknown
+   -h              show this message
+   -d              use non-buffered I/O (usually O_DIRECT).
    -b  binary      name of fio binary, defaults to fio, only support version 2.0.7
+   -n  testname    testname, such as device or file system type, default: Unknown
    -f  filename    fio normally makes up a file name based on the job name, thread number, and file number.
    -m  megabytes   megabytes for the test I/O file to be used, default 1024 (ie 1G)
    -o  directory   output directory name, where to put output files, defaults to ./output
@@ -39,7 +40,6 @@ OPTIONS:
                       randread - multi-user test ie : 4k randread by 1,2,4,8 users
                       randwrite - multi-user test ie : 4k randwrite by by 1,2,4,8 users
    -s  seconds     seconds to run each test for, default 60
-   -d  direct      If 1, use non-buffered I/O (usually O_DIRECT).  Default: 0.
        example
                   ./fio.sh -t "read randread" -f /dev/sda1 -m 1024 -d -o mytest
 EOF
@@ -83,12 +83,22 @@ do
      esac
 done
 
+#prepare
+which ${BINARY} > /dev/null
+if [ $? -ne 0 ]; then
+    exit
+fi
+which Rscript
+if [ $? -ne 0 ]; then
+    exit
+fi
+
 RPLOTS="$OUTPUT/RPLOTS/"
 CSV="$OUTPUT/CSV/"
 mkdir -p $RPLOTS $CSV
 if [ ! -d $OUTPUT ]; then 
-  echo "directory $OUTPUT does not exist"
-  exit
+    echo "directory $OUTPUT does not exist"
+    exit
 fi
 
 jobs=$TESTS
@@ -270,7 +280,7 @@ for job in $jobs; do # {
          echo $cmd
          [[ $EVAL -eq 1 ]] && eval $cmd
        done
-  else 
+  else
     PREFIX="$OUTPUT/$job"
     JOBFILE=${PREFIX}.job
     init
