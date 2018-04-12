@@ -84,12 +84,14 @@ do
 done
 
 #prepare
-which ${BINARY}
+which ${BINARY} > /dev/null 2>&1
 if [ $? -ne 0 ]; then
+    echo "${BINARY} command does not exist"
     exit
 fi
-which Rscript
+which Rscript > /dev/null 2>&1
 if [ $? -ne 0 ]; then
+    echo "Rscript command does not exist"
     exit
 fi
 
