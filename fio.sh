@@ -84,7 +84,7 @@ do
 done
 
 #prepare
-which ${BINARY} > /dev/null
+which ${BINARY}
 if [ $? -ne 0 ]; then
     exit
 fi
