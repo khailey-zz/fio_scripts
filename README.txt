@@ -7,14 +7,16 @@
 
 
 约束与限制：
-    1. 由于不同版本的fio输出的测试报告格式不统一，因此该工具只支持fio-2.0.7版本；
-    2. 一次只能对一个对象进行测试，对象可以是块设备文件、普通文件；
-    3. 测试报告默认保存在./output目录，包含read、write、randread、randwrite、CSV
-    4. 整个测试过程大约需要花费4个小时时间，请保持电源正常供电；
+    1. 由于不同版本的fio输出的测试报告格式不统一，因此该工具只支持fio-2.0.7版本
+    2. 依赖fio、Rscript命令，默认提供了fio 2.0.7工具，位于fio_scripts/fio
+    3. 一次只能对一个对象进行测试，对象可以是块设备文件、普通文件
+    4. 测试报告默认保存在./output目录，包含read、write、randread、randwrite、CSV
+    5. 整个测试过程大约需要花费4个小时时间，请保持电源正常供电
     
 Example:
-    #./fio.sh -f /dev/sdb -m 10240 -d -n myssd
-    #tar czvf myssd.tar.gz output/
+    # sudo apt-get install r-base
+    # ./fio.sh -f /dev/sdb -m 10240 -d -n myssd
+    # tar czvf myssd.tar.gz output/
     
 
 参考：
