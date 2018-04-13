@@ -685,4 +685,5 @@ analysisall <- function() {
 }
 args<-commandArgs(T)
 source(args[1])
-analysisall()
+graphitg(args[2])
+#analysisall()

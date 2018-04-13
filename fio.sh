@@ -137,7 +137,6 @@ filesize=${MEGABYTES}m
 direct=$DIRECT
 runtime=$SECS
 thread=1
-ioscheduler=noop
 group_reporting=1
 ioengine=$IOENGINE
 end_fsync=1
@@ -211,7 +210,7 @@ for job in $jobs; do # {
 
   if [ $job ==  "randread" ] ; then
   # randread: 4k by 1,2,4,8 users
-       for USERS in `eval echo $MULTIUSERS` ; do 
+       for USERS in `eval echo $MULTIUSERS` ; do
          PREFIX="$OUTPUT/${job}_u${USERS}_kb0004"
          JOBFILE=${PREFIX}.job
          # init creates the shared job file potion
@@ -235,7 +234,7 @@ for job in $jobs; do # {
        done
   elif [ $job == "randwrite" ] ; then
   # randwrite: 4k by 1,2,4,8 users
-       for USERS in `eval echo $MULTIUSERS` ; do 
+       for USERS in `eval echo $MULTIUSERS` ; do
          #echo "j: $USERS"
          PREFIX="$OUTPUT/${job}_u${USERS}_kb0004"
          JOBFILE=${PREFIX}.job 
@@ -260,7 +259,7 @@ for job in $jobs; do # {
        done
   elif [ $job == "write" ] ; then
   # write: 8k,64k,512k,1m,4m by 1 user
-       for WRITESIZE in `eval echo $BSSIZES` ; do 
+       for WRITESIZE in `eval echo $BSSIZES` ; do
          PREFIX="$OUTPUT/${job}_u01_kb${WRITESIZE}"
          JOBFILE=${PREFIX}.job
          init
@@ -272,7 +271,7 @@ for job in $jobs; do # {
        done
   elif [ $job == "read" ] ; then
   # read: 8k,64k,512k,1m,4m by 1 user
-       for READSIZE in `eval echo $BSSIZES` ; do 
+       for READSIZE in `eval echo $BSSIZES` ; do
          PREFIX="$OUTPUT/${job}_u01_kb${READSIZE}"
          JOBFILE=${PREFIX}.job
          init
@@ -297,4 +296,6 @@ done  # }
 ./fioparse.sh -f csv $OUTPUT/*.out  > $CSV/${TESTNAME}.csv
 cat $CSV/${TESTNAME}.csv
 #Generate visual IO performance pictures
-Rscript `pwd`/fiop.r $RPLOTS/${TESTNAME}.r
+for job in $jobs; do
+    Rscript `pwd`/fiop.r $RPLOTS/${TESTNAME}.r $job
+done
