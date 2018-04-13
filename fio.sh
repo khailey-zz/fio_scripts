@@ -4,7 +4,7 @@
 EVAL=1
 
 #Optional parameters and default value
-BINARY="fio"
+BINARY="./fio"
 DD=dd
 OUTPUT=`pwd`/output
 TESTNAME="Unknown"
@@ -16,7 +16,7 @@ MULTIUSERS="001 002 004 008 016 032 064"
 IOENGINE="linuxaio"
 BSSIZES="0128 0256 0512 1024 2048 4096"
 SECS="60"
-FILENAME="/dev/null"
+FILENAME="./tmpfile"
 MEGABYTES="1024"
 
 usage()
@@ -29,9 +29,9 @@ run a set of I/O benchmarks
 OPTIONS:
    -h              show this message
    -d              use non-buffered I/O (usually O_DIRECT).
-   -b  binary      name of fio binary, defaults to fio, only support version 2.0.7
+   -b  binary      name of fio binary, defaults to ./fio, only support version 2.0.7
    -n  testname    testname, such as device or file system type, default: Unknown
-   -f  filename    fio normally makes up a file name based on the job name, thread number, and file number.
+   -f  filename    testfile, such as a block device or a regular file, defaults to ./tmpfile
    -m  megabytes   megabytes for the test I/O file to be used, default 1024 (ie 1G)
    -o  directory   output directory name, where to put output files, defaults to ./output
    -t  tests       tests to run, defaults to "read write randread randwrite", options are
@@ -87,6 +87,12 @@ done
 which ${BINARY} > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "${BINARY} command does not exist"
+    exit 
+fi
+${BINARY} -v | grep "2.0.7"
+if [ $? -ne 0 ]
+then
+    echo "Only supports version 2.0.7 of fio"
     exit
 fi
 which Rscript > /dev/null 2>&1
@@ -94,6 +100,8 @@ if [ $? -ne 0 ]; then
     echo "Rscript command does not exist"
     exit
 fi
+touch $FILENAME
+truncate -s ${MEGABYTES}m $FILENAME  > /dev/null 2>&1
 
 RPLOTS="$OUTPUT/RPLOTS/"
 CSV="$OUTPUT/CSV/"
