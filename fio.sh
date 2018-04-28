@@ -12,7 +12,7 @@ TESTNAME="Unknown"
 TESTS="write read randwrite randread"
 DIRECT=0
 #for random read/write
-MULTIUSERS="001 002 004 008 016 032 064"
+MULTIUSERS="001 002 004 008"
 
 IOENGINE="linuxaio"
 BSSIZES="0128 0256 0512 1024 2048 4096"
@@ -148,6 +148,7 @@ runtime=$SECS
 time_based
 thread=1
 group_reporting=1
+ioscheduler=noop
 ioengine=$IOENGINE
 end_fsync=1
 EOF
