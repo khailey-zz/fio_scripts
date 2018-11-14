@@ -714,7 +714,7 @@ for job in $jobs; do # {
          fi
          loops=1
          OFFSET=0
-         PREFIX="$OUTPUT/${job}_u${USERS}_kb${READSIZE}"
+         PREFIX="$OUTPUT/${FILENAME:14}_${job}_u${USERS}_kb${READSIZE}"
          JOBFILE=${PREFIX}.job
          init
          offsets
