@@ -339,10 +339,13 @@ fi
 
 #all="randrw read write readrand"
 all="write randwrite randrw read randread"
-if [ $TESTS = "all" ] ; then
-  jobs=$all
+echo ${CUSTOMBLOCKSIZE}
+if [ $TESTS = "all" ] && [ ${CUSTOMBLOCKSIZE} -lt 1024 ] ; then
+  jobs="randwrite randrw randread"
+  echo ${jobs}
 else 
-  jobs=$TESTS
+  jobs="write read"
+  echo ${jobs}
 fi
 
 DIRECT=${FDIO:-$DIRECT}
