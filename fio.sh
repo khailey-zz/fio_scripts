@@ -820,5 +820,5 @@ if [ $REMOVE == 1 ]  && [ $RAW == 0 ] ; then  # {
     echo "cmd=$cmd"
     eval $cmd
 fi # }
-sh fioparse.sh  $OUTPUT/${FILENAME:14}*${CUSTOMBLOCKSIZE}out > $OUTPUT/${FILENAME:14}_${CUSTOMBLOCKSIZE}.out
+sh fioparse.sh  $OUTPUT/${FILENAME:14}*${CUSTOMBLOCKSIZE}.out > $OUTPUT/${FILENAME:14}_${CUSTOMBLOCKSIZE}.out
 cat $OUTPUT/${FILENAME:14}_${CUSTOMBLOCKSIZE}.out
